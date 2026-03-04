@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Header from "../components/Header";
+import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import "boxicons/css/boxicons.min.css";
 import { Link } from "react-router-dom";
@@ -60,12 +60,12 @@ function Cart() {
 
   return (
     <>
-      <Header />
+      <InternalHeader title="My Cart" />
 
      <div className="content" >
       <div className="cart-page">
 
-        <h2 className="cart-title">My Cart</h2>
+        
 
         {cartItems.length === 0 ? (
           <p className="empty-cart">Your cart is empty</p>

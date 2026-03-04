@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Header from "../components/Header";
+import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import "boxicons/css/boxicons.min.css";
 
@@ -22,11 +22,11 @@ function Checkout() {
 
   return (
     <>
-      <Header />
+      <InternalHeader title="Checkout" />
 <div className="content" >
       <div className="checkout-page">
 
-        <h2 className="section-title">Checkout</h2>
+        
 
         {/* 🏠 Address Section */}
         <div className="checkout-card">
@@ -90,11 +90,11 @@ function Checkout() {
                 checked={paymentMethod === "cod"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              Cash on Delivery
+               Cash on Delivery
             </label>
           </div>
 
-          <div className="payment-option">
+          {/* <div className="payment-option">
             <label>
               <input
                 type="radio"
@@ -104,7 +104,7 @@ function Checkout() {
               />
               UPI / Card / Net Banking
             </label>
-          </div>
+          </div> */}
         </div>
 
       </div>
