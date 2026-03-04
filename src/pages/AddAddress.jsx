@@ -47,7 +47,7 @@ function AddAddress() {
 
   return (
     <>
-      <InternalHeader title="Add New Address" />
+      <InternalHeader title="Add New Address"  />
 
       <div className="add-address-page content">
 

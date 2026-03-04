@@ -7,7 +7,7 @@ function MyAccount() {
 
   return (
     <>
-      <InternalHeader title="My Account" />
+      <InternalHeader title="My Account"  />
      <div className="content" >
       <div className="account-page">
 

@@ -30,7 +30,7 @@ function MyOrders() {
 
   return (
     <>
-      <InternalHeader title="My Orders" />
+      <InternalHeader title="My Orders"  />
       <div className="content" >
 
       <div className="orders-page">

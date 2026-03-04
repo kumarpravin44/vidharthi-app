@@ -30,7 +30,7 @@ function SavedAddresses() {
 
   return (
     <>
-      <InternalHeader title="Saved Addresses" />
+      <InternalHeader title="Saved Addresses"  />
 <div className="content" >
       <div className="address-page">
 

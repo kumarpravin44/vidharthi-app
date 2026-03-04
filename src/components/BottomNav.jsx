@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 function BottomNav() {
   return (
     <div className="bottom-nav">
@@ -16,10 +17,10 @@ function BottomNav() {
         <p>Basket</p>
     </div>
 
-    <div class="nav-item">
+    <Link to="/all-categories" class="nav-item">
         <i class='bx bx-category icon'></i>
         <p>Categories</p>
-    </div>
+    </Link>
     </div>
   );
 }

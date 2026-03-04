@@ -1,10 +1,12 @@
 import { useNavigate, Link } from "react-router-dom";
-
+import { useState } from "react";
 import "boxicons/css/boxicons.min.css";
 
-function InternalHeader({ title, rightIcon, onRightClick }) {
+function InternalHeader({ title, showSearch = false }) {
 
   const navigate = useNavigate();
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   return (
     <div className="internal-header">
@@ -18,25 +20,50 @@ function InternalHeader({ title, rightIcon, onRightClick }) {
       </button>
 
       {/* Title */}
-      <h3 className="header-title">{title}</h3>
+      <h3 className={`header-title ${searchActive ? "hide-title" : ""}`}>
+        {title}
+      </h3>
 
-      {/* Optional Right Icon */}
-      {rightIcon ? (
-        <button
-          className="right-btn"
-          onClick={onRightClick}
-        >
-          <i className={`bx ${rightIcon}`}></i>
-        </button>
-      ) : (
-        <div style={{ width: 40 }}>
+      <div className="header-actions">
 
-            <Link to="/cart" className="cart-icon">
-          <i className='bx bx-cart'></i>
-          <span className="cart-count">2</span>
-        </Link>
-        </div>  // balance spacing
-      )}
+        {/* 🔥 Search (Hidden by default) */}
+        {showSearch && (
+          <div className={`search-wrapper ${searchActive ? "active" : ""}`}>
+
+            <i
+              className="bx bx-search search-icon"
+              onClick={() => setSearchActive(true)}
+            ></i>
+
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+
+            {searchActive && (
+              <i
+                className='bx bx-x close-icon'
+                onClick={() => {
+                  setSearchActive(false);
+                  setSearchValue("");
+                }}
+              ></i>
+            )}
+
+          </div>
+        )}
+
+        {/* Cart */}
+        {!searchActive && (
+          <Link to="/cart" className="cart-icon">
+            <i className='bx bx-cart'></i>
+            <span className="cart-count">2</span>
+          </Link>
+        )}
+
+      </div>
 
     </div>
   );

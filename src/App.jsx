@@ -11,7 +11,11 @@ import HelpSupport from "./pages/HelpSupport";
 import EditProfile from "./pages/EditProfile";
 import AddAddress from "./pages/AddAddress";
 import CategoryProducts from "./pages/CategoryProducts";
-
+import ProductDetail from "./pages/ProductDetail";
+import AllCategories from "./pages/AllCategories";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ReturnRefundPolicy from "./pages/ReturnRefundPolicy";
+import ContactUs from "./pages/ContactUs";
 
 function App() {
   return (
@@ -29,6 +33,11 @@ function App() {
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/add-address" element={<AddAddress />} />
         <Route path="/category/:id" element={<CategoryProducts />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/all-categories" element={<AllCategories />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         
       </Routes>
     </BrowserRouter>
