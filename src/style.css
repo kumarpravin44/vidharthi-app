@@ -73,7 +73,7 @@ p{
 .cart-count{
     position:absolute;
     top: -2px;
-    right: -7px;
+    right: -2px;
     background:#ff7a00;
     color:#fff;
     font-size:10px;
@@ -206,6 +206,7 @@ grid-gap: 2px;
     color: #555;
     cursor: pointer;
     text-decoration: none;
+    position: relative;
 }
 
 .nav-item .icon{
@@ -750,7 +751,7 @@ img{
   font-size:20px;
   color:#ff7a00;
   cursor:pointer;
-  min-width:24px;
+  
 }
 
 /* Input */
@@ -1478,9 +1479,10 @@ textarea{
   flex:1;
 }
 
-.category-info h4{
-  margin:0;
-  font-size:15px;
+.category-info h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
 }
 
 .category-info p{
@@ -1624,4 +1626,13 @@ textarea{
 
 .contact-form textarea{
   resize:none;
+}
+
+.vegetable-page .product-card{
+  border:1px solid #e8f5e9;
+}
+
+.vegetable-page .price{
+  color:#2e7d32;
+  font-weight:600;
 }

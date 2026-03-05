@@ -61,7 +61,7 @@ function CategoryProducts() {
 
   return (
     <>
-      <InternalHeader title="Products" />
+      <InternalHeader title="" showSearch />
 
       <div className="category-products-page content">
 

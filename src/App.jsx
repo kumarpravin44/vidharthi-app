@@ -16,6 +16,7 @@ import AllCategories from "./pages/AllCategories";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ReturnRefundPolicy from "./pages/ReturnRefundPolicy";
 import ContactUs from "./pages/ContactUs";
+import Vegetable from "./pages/Vegetable";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/vegetables" element={<Vegetable />} />
         
       </Routes>
     </BrowserRouter>
