@@ -1636,3 +1636,41 @@ textarea{
   color:#2e7d32;
   font-weight:600;
 }
+
+.price-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.new-price{
+  font-weight:600;
+  color:#ff7a00;
+}
+
+.old-price{
+  text-decoration:line-through;
+  color:#999;
+  font-size:12px;
+}
+
+.discount-badge {
+    background: #2e7d32;
+    color: #e8f5e9;
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 10px 0;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.product-price .old-price{
+  font-size: 20px;
+      margin-left: 15px;
+}

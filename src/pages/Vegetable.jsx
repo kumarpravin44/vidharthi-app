@@ -16,11 +16,11 @@ function Vegetable() {
   const [popupMessage, setPopupMessage] = useState("");
 
   const vegetables = [
-    { id: 1, name: "Tomato", price: 30, image: tomatoImg },
-    { id: 2, name: "Potato", price: 25, image: potatoImg },
-    { id: 3, name: "Onion", price: 40, image: oninonImg },
-    { id: 4, name: "Carrot", price: 50, image: carrotImg }
-  ];
+  { id: 1, name: "Tomato", price: 30, oldPrice: 40, image: tomatoImg },
+  { id: 2, name: "Potato", price: 25, oldPrice: 35, image: potatoImg },
+  { id: 3, name: "Onion", price: 40, oldPrice: 55, image: oninonImg },
+  { id: 4, name: "Carrot", price: 50, oldPrice: 65, image: carrotImg }
+];
 
   const showPopup = (msg) => {
     setPopupMessage(msg);
@@ -56,7 +56,16 @@ function Vegetable() {
               <img src={item.image} alt={item.name} />
 
               <h4>{item.name}</h4>
-              <p className="price">₹ {item.price} / kg</p>
+              <div className="price-section">
+  <span className="new-price">₹ {item.price} / kg</span>
+  <span className="old-price">₹ {item.oldPrice}</span>
+</div>
+
+<span className="discount-badge">
+  {Math.round(
+    ((item.oldPrice - item.price) / item.oldPrice) * 100
+  )}% OFF
+</span>
 
               <button
                 className="add-cart-btn"

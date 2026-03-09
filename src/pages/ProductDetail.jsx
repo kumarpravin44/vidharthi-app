@@ -11,13 +11,14 @@ function ProductDetail() {
   const { id } = useParams();
 
   const product = {
-    id,
-    name: "Tata Salt - 1kg",
-    price: 25,
-    description:
-      "High quality iodized salt for daily cooking. Pure and hygienically packed.",
-    image: saltImg
-  };
+  id,
+  name: "Tata Salt - 1kg",
+  price: 25,
+  oldPrice: 35,
+  description:
+    "High quality iodized salt for daily cooking. Pure and hygienically packed.",
+  image: saltImg
+};
 
   const [qty, setQty] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
@@ -50,7 +51,7 @@ function ProductDetail() {
 
   return (
     <>
-      <InternalHeader title="Product Details" />
+      <InternalHeader title="Product Details" showSearch />
 
       <div className="product-detail-page content">
 
@@ -68,13 +69,21 @@ function ProductDetail() {
               }`}
             ></i>
           </div>
+           <span className="discount-badge">
+  {Math.round(
+    ((product.oldPrice - product.price) / product.oldPrice) * 100
+  )}% OFF
+</span>
         </div>
 
         {/* Info Section */}
         <div className="product-info-card">
 
           <h2>{product.name}</h2>
-          <p className="product-price">₹ {product.price}</p>
+          <p className="product-price">
+            <span>₹ {product.price}</span> <span className="old-price">₹ {product.oldPrice}</span>
+            </p>
+         
 
           <p className="product-description">
             {product.description}

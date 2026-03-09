@@ -55,13 +55,13 @@ function InternalHeader({ title, showSearch = false }) {
           </div>
         )}
 
-        {/* Cart */}
+        {/* Cart
         {!searchActive && (
           <Link to="/cart" className="cart-icon">
             <i className='bx bx-cart'></i>
             <span className="cart-count">2</span>
           </Link>
-        )}
+        )} */}
 
       </div>
 

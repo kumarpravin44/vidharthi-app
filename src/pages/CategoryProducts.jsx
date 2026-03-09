@@ -19,11 +19,11 @@ function CategoryProducts() {
   const [filterBy, setFilterBy] = useState("");
 
   const products = [
-    { id: 1, name: "Tata Salt", price: 25, image: saltImg },
-    { id: 2, name: "Basmati Rice", price: 120, image: riceImg },
-    { id: 3, name: "Premium Rice", price: 150, image: riceImg },
-    { id: 4, name: "Rock Salt", price: 30, image: saltImg }
-  ];
+  { id: 1, name: "Tata Salt", price: 25, oldPrice: 35, image: saltImg },
+  { id: 2, name: "Basmati Rice", price: 120, oldPrice: 150, image: riceImg },
+  { id: 3, name: "Premium Rice", price: 150, oldPrice: 180, image: riceImg },
+  { id: 4, name: "Rock Salt", price: 30, oldPrice: 40, image: saltImg }
+];
 
   // 🔥 Filtering + Sorting Logic
   const filteredProducts = useMemo(() => {
@@ -108,7 +108,17 @@ function CategoryProducts() {
                 <img src={product.image} alt={product.name} />
 
                 <h4>{product.name}</h4>
-                <p className="price">₹ {product.price}</p>
+
+<div className="price-section">
+  <span className="new-price">₹ {product.price}</span>
+  <span className="old-price">₹ {product.oldPrice}</span>
+</div>
+
+<span className="discount-badge">
+  {Math.round(
+    ((product.oldPrice - product.price) / product.oldPrice) * 100
+  )}% OFF
+</span>
 
                 <button
                   className="add-cart-btn"
