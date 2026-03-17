@@ -1,27 +1,46 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { productService } from "../services/productService";
+import { useCart } from "../context/CartContext";
+
+const NAV_ICONS = ["bx-home", "bx-leaf", "bx-star", "bx-grid-alt", "bx-tag"];
+
 function BottomNav() {
+  const location = useLocation();
+  const { itemCount } = useCart();
+  const [navCategories, setNavCategories] = useState([]);
+
+  useEffect(() => {
+    productService.getNavCategories()
+      .then(setNavCategories)
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="bottom-nav">
-      <Link to="/" class="nav-item active">
-        <i class='bx bx-home icon'></i>
-        <p>Grocery</p>
-    </Link>
+      {navCategories.map((cat, idx) => {
+        const path = `/category/${cat.id}`;
+        const isActive = location.pathname === path;
+        return (
+          <Link to={path} key={cat.id} className={`nav-item ${isActive ? "active" : ""}`}>
+            <i className={`bx ${NAV_ICONS[idx % NAV_ICONS.length]} icon`}></i>
+            <p>{cat.name}</p>
+          </Link>
+        );
+      })}
 
-    <Link to="/vegetables" class="nav-item">
-        <i class='bx bx-leaf icon'></i>
-        <p>Vegetable</p>
-    </Link>
-
-    <Link to="/cart" class="nav-item">
-        <i class='bx bx-shopping-bag icon'></i>
+      {/* Cart — always visible */}
+      <Link to="/cart" className={`nav-item ${location.pathname === "/cart" ? "active" : ""}`}>
+        <i className="bx bx-shopping-bag icon"></i>
         <p>Basket</p>
-        <span class="cart-count">2</span>
-    </Link>
+        {itemCount > 0 && <span className="cart-count">{itemCount}</span>}
+      </Link>
 
-    <Link to="/all-categories" class="nav-item">
-        <i class='bx bx-category icon'></i>
+      {/* All Categories — always visible */}
+      <Link to="/all-categories" className={`nav-item ${location.pathname === "/all-categories" ? "active" : ""}`}>
+        <i className="bx bx-category icon"></i>
         <p>Categories</p>
-    </Link>
+      </Link>
     </div>
   );
 }

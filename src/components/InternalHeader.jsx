@@ -8,6 +8,20 @@ function InternalHeader({ title, showSearch = false }) {
   const [searchActive, setSearchActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+      setSearchActive(false);
+      setSearchValue("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="internal-header">
 
@@ -32,7 +46,13 @@ function InternalHeader({ title, showSearch = false }) {
 
             <i
               className="bx bx-search search-icon"
-              onClick={() => setSearchActive(true)}
+              onClick={() => {
+                if (searchActive && searchValue.trim()) {
+                  handleSearch();
+                } else {
+                  setSearchActive(true);
+                }
+              }}
             ></i>
 
             <input
@@ -40,6 +60,7 @@ function InternalHeader({ title, showSearch = false }) {
               placeholder="Search..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onKeyPress={handleKeyPress}
             />
 
             {searchActive && (
