@@ -12,7 +12,7 @@ function Home() {
       <div className="content">
       <SearchBar />
       <HeroBanner />
-      {/* <Categories /> */}
+      <Categories />
       <CategoryWithProducts />
       </div>
       <BottomNav />

@@ -125,7 +125,7 @@ function CategoryWithProducts() {
         <div key={category.id} className="category-section">
           {/* Category Header */}
           <div className="category-header">
-            <h2>{category.name} - Popular Products</h2>
+            <h2>{category.name}</h2>
             <Link to={`/category/${category.id}`} className="view-all-link">
               View All <i className="bx bx-chevron-right"></i>
             </Link>

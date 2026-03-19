@@ -376,14 +376,15 @@ h2{
     margin:15px 0;
 }
 
-.otp-inputs input{
-    width:50px;
-    height:50px;
-    text-align:center;
-    font-size:18px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    outline:none;
+.otp-inputs input {
+    width: 16.66%;
+    height: 50px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    margin: 0 2px;
 }
 
 .verify{
@@ -631,6 +632,9 @@ img{
   justify-content:space-between;
   margin-bottom:8px;
 }
+.summary-item span:first-child {
+    width: 75%;
+}
 
 .price-row{
   display:flex;
@@ -659,6 +663,11 @@ img{
 
 .payment-option{
   margin-bottom:10px;
+}
+.payment-option input {
+    margin-right: 5px;
+    position: relative;
+    top: 2px;
 }
 
 .place-order-bar{
@@ -1281,9 +1290,15 @@ textarea{
   margin-bottom:10px;
 }
 
-.product-card h4{
-  font-size:14px;
-  margin-bottom:5px;
+.product-card h4 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-weight: 500;
 }
 
 .price{
@@ -3915,7 +3930,7 @@ textarea{
    ============================================ */
 
 .category-products-container {
-  padding: 0 16px 80px 16px;
+  padding: 0 0 80px 0;
 }
 
 .category-section {
@@ -3931,21 +3946,21 @@ textarea{
 }
 
 .category-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #333;
-  margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
 }
 
 .view-all-link {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #ff7a00;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #ff7a00;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s;
 }
 
 .view-all-link:hover {

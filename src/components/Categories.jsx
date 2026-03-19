@@ -46,6 +46,8 @@ function Categories() {
   return (
     <div className="categories">
       {categories.map((category, index) => (
+        
+        
         <Link
           to={`/category/${category.id}`}
           key={category.id}

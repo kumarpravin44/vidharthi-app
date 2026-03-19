@@ -20,9 +20,9 @@ function Header() {
           <i className='bx bx-grid-alt'></i>
         </div>
 
-        <div className="logo">
+        <Link to="/" className="logo">
           <img src={logo} alt="Logo" />
-        </div>
+        </Link>
 
         <div className="right-icons">
           {isAuthenticated && (
