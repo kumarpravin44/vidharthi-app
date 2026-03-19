@@ -1,6 +1,6 @@
 import { fetchAPI } from './api';
 import { API_ENDPOINTS } from '../config/api';
-import { getCache, setCache, CACHE_KEYS } from '../utils/cacheUtils';
+import { getCache, setCache, CACHE_KEYS } from '../utils/cacheutils';
 
 
 export const productService = {
@@ -67,6 +67,19 @@ export const productService = {
   // Get top-level categories only
   getTopLevelCategories: async () => {
     return await fetchAPI(`${API_ENDPOINTS.CATEGORIES.LIST}?top_level=true`);
+  },
+
+  // Get categories tree (parents with children) - with caching
+  getCategoriesTree: async (forceRefresh = false) => {
+    if (!forceRefresh) {
+      const cached = getCache(CACHE_KEYS.CATEGORIES_TREE);
+      if (cached) {
+        return cached;
+      }
+    }
+    const data = await fetchAPI(API_ENDPOINTS.CATEGORIES.TREE);
+    setCache(CACHE_KEYS.CATEGORIES_TREE, data);
+    return data;
   },
 
 };

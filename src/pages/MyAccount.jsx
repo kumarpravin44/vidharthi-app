@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useAuth } from "../context/AuthContext";
-import { clearCache, clearAllCaches, CACHE_KEYS } from '../utils/cacheUtils';
+import { clearCache, clearAllCaches, CACHE_KEYS } from '../utils/cacheutils';
 import { productService } from '../services/productService';
 import "boxicons/css/boxicons.min.css";
 

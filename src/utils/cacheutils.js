@@ -2,7 +2,7 @@
  * Cache utility for localStorage with expiry support
  */
 
-const CACHE_KEYS = {
+export const CACHE_KEYS = {
   NAV_CATEGORIES: 'nav_categories',
   CATEGORIES_TREE: 'categories_tree',
 };
@@ -92,5 +92,3 @@ export const isCacheValid = (key) => {
   const cached = getCache(key);
   return cached !== null;
 };
-
-export { CACHE_KEYS, CACHE_DURATION };

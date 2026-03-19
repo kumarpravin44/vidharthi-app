@@ -40,6 +40,14 @@ export const API_ENDPOINTS = {
     DETAIL: (id) => `/orders/${id}`,
     TRACKING: (id) => `/orders/${id}/tracking`,
   },
+  // Addresses
+  ADDRESSES: {
+    LIST: '/addresses',
+    CREATE: '/addresses',
+    DETAIL: (id) => `/addresses/${id}`,
+    UPDATE: (id) => `/addresses/${id}`,
+    DELETE: (id) => `/addresses/${id}`,
+  },
   // Offers
   OFFERS: {
     LIST: '/offers',

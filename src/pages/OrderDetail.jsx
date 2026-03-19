@@ -4,14 +4,19 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import "boxicons/css/boxicons.min.css";
 
 function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { addItem } = useCart();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reordering, setReordering] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -54,6 +59,39 @@ function OrderDetail() {
       'cancelled': 'cancelled'
     };
     return statusMap[status?.toLowerCase()] || 'pending';
+  };
+
+  const showPopup = (message, type = "success") => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setTimeout(() => setPopupMessage(""), 3000);
+  };
+
+  const handleRepeatOrder = async () => {
+    console.log('Repeat order clicked:', order);
+    
+    if (!order?.items || order.items.length === 0) {
+      console.log('No items in order');
+      showPopup("No items found in this order", "error");
+      return;
+    }
+
+    console.log('Order items:', order.items);
+    setReordering(true);
+    
+    try {
+      for (const item of order.items) {
+        console.log('Adding item to cart:', item);
+        await addItem(item.product_id, item.quantity);
+      }
+      showPopup("Items added to cart! 🛒", "success");
+      setTimeout(() => navigate("/cart"), 1500);
+    } catch (error) {
+      console.error('Error repeating order:', error);
+      showPopup(error.message || "Failed to add some items", "error");
+    } finally {
+      setReordering(false);
+    }
   };
 
   if (loading) {
@@ -126,9 +164,23 @@ function OrderDetail() {
             <h4><i className='bx bx-package'></i> Items</h4>
             <div className="order-items-list">
               {order.items?.map((item, idx) => (
-                <div className="order-item-row" key={idx}>
-                  <div>
-                    <p className="item-name">Product ID: {item.product_id.substring(0, 8)}</p>
+                <div 
+                  className="order-item-row clickable" 
+                  key={idx}
+                  onClick={() => item.product?.id && navigate(`/product/${item.product.id}`)}
+                  style={{ cursor: item.product?.id ? 'pointer' : 'default' }}
+                >
+                  {item.product?.image_url && (
+                    <img 
+                      src={item.product.image_url} 
+                      alt={item.product.name}
+                      className="order-item-image"
+                    />
+                  )}
+                  <div className="order-item-details">
+                    <p className="item-name">
+                      {item.product?.name || `Product ID: ${item.product_id.substring(0, 8)}`}
+                    </p>
                     <p className="item-qty">Quantity: {item.quantity}</p>
                   </div>
                   <div className="item-prices">
@@ -182,16 +234,42 @@ function OrderDetail() {
             </div>
           )}
 
-          <button 
-            className="primary-btn" 
-            style={{ width: '100%', marginTop: '20px' }}
-            onClick={() => navigate("/orders")}
-          >
-            Back to Orders
-          </button>
+          <div className="order-detail-actions">
+            <button
+              className="repeat-order-btn-lg"
+              onClick={handleRepeatOrder}
+              disabled={reordering}
+            >
+              <i className='bx bx-revision'></i>
+              {reordering ? "Adding to Cart..." : "Repeat This Order"}
+            </button>
+            <button 
+              className="primary-btn" 
+              style={{ width: '100%' }}
+              onClick={() => navigate("/orders")}
+            >
+              Back to Orders
+            </button>
+          </div>
 
         </div>
       </div>
+
+      {popupMessage && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <i
+              className={`bx ${
+                popupType === "success"
+                  ? "bx-check-circle success-icon"
+                  : "bx-error error-icon"
+              }`}
+            ></i>
+            <h3>{popupMessage}</h3>
+          </div>
+        </div>
+      )}
+
       <BottomNav />
     </>
   );
