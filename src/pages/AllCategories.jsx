@@ -8,6 +8,7 @@ import saltImg from "../images/product/salt.webp";
 import riceImg from "../images/product/rice.webp";
 import drinksImg from "../images/product/drinks.webp";
 import dryfruitsImg from "../images/product/dryfruits.webp";
+import Loader from "../components/Loader";
 
 function AllCategories() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function AllCategories() {
 
       <div className="all-categories-page content">
         {loading ? (
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading...</p>
+          <Loader text="Loading All Categories..." />
         ) : (
           <div className="categories-grid-new">
             {categories.map((cat, index) => (

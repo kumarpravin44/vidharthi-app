@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import Loader from "../components/Loader";
 
 import saltImg from "../images/product/salt.webp";
 import drinksImg from "../images/product/drinks.webp";
@@ -36,12 +37,8 @@ function Categories() {
   };
 
   if (loading) {
-    return (
-      <div className="categories">
-        <p style={{ textAlign: 'center', padding: '20px' }}>Loading categories...</p>
-      </div>
-    );
-  }
+  return <Loader text="Loading Categories..." />;
+}
 
   return (
     <div className="categories">
