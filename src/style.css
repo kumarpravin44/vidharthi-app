@@ -349,17 +349,19 @@ h2{
     font-size:14px;
 }
 
-.primary-btn{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    background:#ff7a00;
-    color:#fff;
-    font-weight:500;
-    cursor:pointer;
-    margin-bottom:20px;
-    transition:0.3s;
+.primary-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #ff7a00;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: 0.3s;
+    display: inline-block;
+    text-decoration: none;
 }
 
 .primary-btn:hover{
@@ -828,13 +830,17 @@ img{
 }
 
 .edit-profile-btn {
-    padding: 6px 14px;
     border: none;
-    background: #ff7a00;
+    background: #5e5e5e;
     color: #fff;
-    border-radius: 8px;
     cursor: pointer;
     text-decoration: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .account-item {
@@ -1685,7 +1691,7 @@ textarea{
     background: #2e7d32;
     color: #e8f5e9;
     font-size: 11px;
-    padding: 3px 6px;
+    padding: 6px 8px;
     border-radius: 10px 0;
     font-weight: 500;
     margin-bottom: 10px;
@@ -1693,6 +1699,7 @@ textarea{
     position: absolute;
     left: 0;
     top: 0;
+    line-height: 1;
 }
 
 .product-price .old-price{
@@ -3274,11 +3281,7 @@ textarea{
    --------------------------------------------------------------------------- */
 
 /* Orders List Page */
-.orders-page {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
+
 
 .empty-orders {
   text-align: center;
@@ -3402,8 +3405,7 @@ textarea{
 
 /* Order Detail Page */
 .order-detail-page {
-  padding: 20px;
-  max-width: 700px;
+  
   margin: 0 auto;
 }
 

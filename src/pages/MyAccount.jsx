@@ -59,7 +59,7 @@ function MyAccount() {
             </div>
 
             <Link to="/edit-profile" className="edit-profile-btn">
-              Edit
+              <i class='bx bx-edit-alt'></i>
             </Link>
           </div>
 

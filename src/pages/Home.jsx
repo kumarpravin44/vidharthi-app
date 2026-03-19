@@ -13,7 +13,7 @@ function Home() {
       <SearchBar />
       <HeroBanner />
       <Categories />
-      <CategoryWithProducts />
+      {/* <CategoryWithProducts /> */}
       </div>
       <BottomNav />
     </div>

@@ -1,5 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import { useNotifications } from "../context/NotificationContext";
+import { useAuth } from "../context/AuthContext";
 import "boxicons/css/boxicons.min.css";
 
 function InternalHeader({ title, showSearch = false }) {
@@ -7,6 +9,8 @@ function InternalHeader({ title, showSearch = false }) {
   const navigate = useNavigate();
   const [searchActive, setSearchActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const { isAuthenticated } = useAuth();
+  const { unreadCount } = useNotifications();
 
   const handleSearch = () => {
     if (searchValue.trim()) {
@@ -39,6 +43,7 @@ function InternalHeader({ title, showSearch = false }) {
       </h3>
 
       <div className="header-actions">
+        
 
         {/* 🔥 Search (Hidden by default) */}
         {showSearch && (
@@ -75,6 +80,13 @@ function InternalHeader({ title, showSearch = false }) {
 
           </div>
         )}
+
+        {isAuthenticated && (
+            <Link to="/notifications" className="bell-icon">
+              <i className='bx bx-bell'></i>
+              {unreadCount > 0 && <span className="bell-badge">{unreadCount}</span>}
+            </Link>
+          )}
 
         {/* Cart
         {!searchActive && (
