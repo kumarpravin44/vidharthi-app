@@ -1,5 +1,7 @@
 import { fetchAPI } from './api';
 import { API_ENDPOINTS } from '../config/api';
+import { getCache, setCache, CACHE_KEYS } from '../utils/cacheUtils';
+
 
 export const productService = {
   // Get all products with optional filters
@@ -41,4 +43,30 @@ export const productService = {
   getCategory: async (id) => {
     return await fetchAPI(API_ENDPOINTS.CATEGORIES.DETAIL(id));
   },
+
+  // Get subcategories of a parent category
+  getSubcategories: async (parentId) => {
+    return await fetchAPI(`${API_ENDPOINTS.CATEGORIES.LIST}?parent_id=${parentId}`);
+  },
+
+ // Get categories tree (parents with children) - with caching
+  getNavCategories: async (forceRefresh = false) => {
+    if (!forceRefresh) {
+      const cached = getCache(CACHE_KEYS.NAV_CATEGORIES);
+      if (cached) {
+        // Return cached nav categories immediately
+        return cached;
+      }
+    }
+    // Fetch from API and update cache
+    const data = await fetchAPI(API_ENDPOINTS.CATEGORIES.NAV);
+    setCache(CACHE_KEYS.NAV_CATEGORIES, data);
+    return data;
+  },
+
+  // Get top-level categories only
+  getTopLevelCategories: async () => {
+    return await fetchAPI(`${API_ENDPOINTS.CATEGORIES.LIST}?top_level=true`);
+  },
+
 };

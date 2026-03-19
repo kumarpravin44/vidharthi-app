@@ -8,11 +8,10 @@ import drinksImg from "../images/product/drinks.webp";
 import riceImg from "../images/product/rice.webp";
 import dryfruitsImg from "../images/product/dryfruits.webp";
 
-function Categories() {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+function Categories({ parentCategoryId = null, categories = null }) {
+  const [localCategories, setLocalCategories] = useState(categories || []);
+  const [loading, setLoading] = useState(!categories);
 
-  // Default images mapping
   const defaultImages = {
     0: saltImg,
     1: riceImg,
@@ -21,13 +20,25 @@ function Categories() {
   };
 
   useEffect(() => {
+    // If categories are passed as prop, use them directly
+    if (categories !== null) {
+      setLocalCategories(categories);
+      setLoading(false);
+      return;
+    }
+    // Otherwise, fetch from API
     loadCategories();
-  }, []);
+  }, [parentCategoryId, categories]);
 
   const loadCategories = async () => {
     try {
-      const data = await productService.getCategories();
-      setCategories(data);
+      let data;
+      if (parentCategoryId) {
+        data = await productService.getSubcategories(parentCategoryId);
+      } else {
+        data = await productService.getCategories();
+      }
+      setLocalCategories(data);
     } catch (error) {
       console.error('Failed to load categories:', error);
     } finally {
@@ -43,11 +54,13 @@ function Categories() {
     );
   }
 
+  if (localCategories.length === 0) {
+    return null; // Don't show anything if no categories
+  }
+
   return (
     <div className="categories">
-      {categories.map((category, index) => (
-        
-        
+      {localCategories.map((category, index) => (
         <Link
           to={`/category/${category.id}`}
           key={category.id}

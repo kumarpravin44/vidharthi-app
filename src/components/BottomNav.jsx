@@ -11,10 +11,18 @@ function BottomNav() {
   const [navCategories, setNavCategories] = useState([]);
 
   useEffect(() => {
-    productService.getNavCategories()
-      .then(setNavCategories)
-      .catch(() => {});
+    loadNavCategories();
   }, []);
+
+  const loadNavCategories = async () => {
+    try {
+      // This will use cache if available and not expired
+      const categories = await productService.getNavCategories();
+      setNavCategories(categories);
+    } catch (error) {
+      console.error('Failed to load nav categories:', error);
+    }
+  };
 
   return (
     <div className="bottom-nav">

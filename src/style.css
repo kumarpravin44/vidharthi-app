@@ -4348,3 +4348,22 @@ textarea{
   vertical-align: middle;
 }
 
+/* Added by sanjay */
+.home-categories {
+  padding: 10px 0;
+}
+
+.category-group {
+  margin-bottom: 25px;
+}
+
+.category-heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  padding: 12px 15px;
+  margin: 0;
+  border-left: 4px solid #4CAF50;
+  background: linear-gradient(90deg, #f5f5f5 0%, #fff 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
