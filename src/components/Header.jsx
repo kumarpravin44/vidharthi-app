@@ -26,10 +26,10 @@ function Header() {
 
         <div className="right-icons">
           
-          {/* <Link to="/cart" className="cart-icon">
+          <Link to="/cart" className="cart-icon">
             <i className='bx bx-cart'></i>
             {itemCount > 0 && <span className="cart-count">{itemCount}</span>}
-          </Link> */}
+          </Link>
           {isAuthenticated && (
             <Link to="/notifications" className="bell-icon">
               <i className='bx bx-bell'></i>
