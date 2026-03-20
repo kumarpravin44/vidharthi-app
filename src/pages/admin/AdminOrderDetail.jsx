@@ -263,46 +263,52 @@ function AdminOrderDetail() {
             </div>
             <div className="status-update-section">
               <p>Current Status: <span className={`status-badge ${getStatusColor(order.status)}`}>{order.status}</span></p>
+              {(order.status === 'delivered' || order.status === 'cancelled') && (
+                <p className="status-note">
+                  <i className='bx bx-info-circle'></i>
+                  This order is {order.status}. Status cannot be changed.
+                </p>
+              )}
               <div className="status-buttons">
                 <button 
                   className="status-btn placed"
                   onClick={() => handleStatusChange('placed')}
-                  disabled={updatingStatus || order.status === 'placed'}
+                  disabled={updatingStatus || order.status === 'placed' || order.status === 'delivered' || order.status === 'cancelled'}
                 >
                   Placed
                 </button>
                 <button 
                   className="status-btn confirmed"
                   onClick={() => handleStatusChange('confirmed')}
-                  disabled={updatingStatus || order.status === 'confirmed'}
+                  disabled={updatingStatus || order.status === 'confirmed' || order.status === 'delivered' || order.status === 'cancelled'}
                 >
                   Confirmed
                 </button>
                 <button 
                   className="status-btn packed"
                   onClick={() => handleStatusChange('packed')}
-                  disabled={updatingStatus || order.status === 'packed'}
+                  disabled={updatingStatus || order.status === 'packed' || order.status === 'delivered' || order.status === 'cancelled'}
                 >
                   Packed
                 </button>
                 <button 
                   className="status-btn out-for-delivery"
                   onClick={() => handleStatusChange('out_for_delivery')}
-                  disabled={updatingStatus || order.status === 'out_for_delivery'}
+                  disabled={updatingStatus || order.status === 'out_for_delivery' || order.status === 'delivered' || order.status === 'cancelled'}
                 >
                   Out for Delivery
                 </button>
                 <button 
                   className="status-btn delivered"
                   onClick={() => handleStatusChange('delivered')}
-                  disabled={updatingStatus || order.status === 'delivered'}
+                  disabled={updatingStatus || order.status === 'delivered' || order.status === 'cancelled'}
                 >
                   Delivered
                 </button>
                 <button 
                   className="status-btn cancelled"
                   onClick={() => handleStatusChange('cancelled')}
-                  disabled={updatingStatus || order.status === 'cancelled'}
+                  disabled={updatingStatus || order.status === 'cancelled' || order.status === 'delivered'}
                 >
                   Cancelled
                 </button>

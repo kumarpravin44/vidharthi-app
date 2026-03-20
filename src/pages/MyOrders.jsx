@@ -4,15 +4,21 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import "boxicons/css/boxicons.min.css";
 
 function MyOrders() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { addItem } = useCart();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reordering, setReordering] = useState(null);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
 
   useEffect(() => {
+    console.log('MyOrders component mounted');
     if (!isAuthenticated) {
       navigate("/login");
       return;
@@ -24,6 +30,7 @@ function MyOrders() {
     setLoading(true);
     try {
       const data = await orderService.getOrders();
+      console.log('Orders loaded:', data);
       setOrders(data);
     } catch (error) {
       console.error('Failed to load orders:', error);
@@ -39,6 +46,39 @@ function MyOrders() {
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  const showPopup = (message, type = "success") => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setTimeout(() => setPopupMessage(""), 3000);
+  };
+
+  const handleRepeatOrder = async (order) => {
+    console.log('Repeat order clicked:', order);
+    
+    if (!order.items || order.items.length === 0) {
+      console.log('No items in order');
+      showPopup("No items found in this order", "error");
+      return;
+    }
+
+    console.log('Order items:', order.items);
+    setReordering(order.id);
+    
+    try {
+      for (const item of order.items) {
+        console.log('Adding item to cart:', item);
+        await addItem(item.product_id, item.quantity);
+      }
+      showPopup("Items added to cart! 🛒", "success");
+      setTimeout(() => navigate("/cart"), 1500);
+    } catch (error) {
+      console.error('Error repeating order:', error);
+      showPopup(error.message || "Failed to add some items", "error");
+    } finally {
+      setReordering(null);
+    }
   };
 
   const getStatusClass = (status) => {
@@ -109,12 +149,22 @@ function MyOrders() {
 
                 <div className="order-footer">
                   <h4>Total: ₹ {order.total?.toFixed(2) || '0.00'}</h4>
-                  <button 
-                    className="view-btn"
-                    onClick={() => navigate(`/order/${order.id}`)}
-                  >
-                    View Details
-                  </button>
+                  <div className="order-footer-btns">
+                    <button
+                      className="repeat-order-btn"
+                      onClick={(e) => { e.stopPropagation(); handleRepeatOrder(order); }}
+                      disabled={reordering === order.id}
+                    >
+                      <i className='bx bx-revision'></i>
+                      {reordering === order.id ? "Adding..." : "Repeat"}
+                    </button>
+                    <button 
+                      className="view-btn"
+                      onClick={() => navigate(`/order/${order.id}`)}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
 
               </div>
@@ -123,6 +173,21 @@ function MyOrders() {
 
         </div>
       </div>
+
+      {popupMessage && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <i
+              className={`bx ${
+                popupType === "success"
+                  ? "bx-check-circle success-icon"
+                  : "bx-error error-icon"
+              }`}
+            ></i>
+            <h3>{popupMessage}</h3>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </>

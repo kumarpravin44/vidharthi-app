@@ -1,31 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { addressService } from "../services/addressService";
+import { useLoader } from "../context/LoaderContext";
 import "boxicons/css/boxicons.min.css";
 import { Link } from "react-router-dom";
 
 
 function SavedAddresses() {
 
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      name: "Pravin Kumar",
-      phone: "9876543210",
-      address: "Flat 204, Yahavi Vanaha Society, Pune - 411021",
-      isDefault: true
-    },
-    {
-      id: 2,
-      name: "Pravin Kumar",
-      phone: "9876543210",
-      address: "Baner Road, Pune - 411045",
-      isDefault: false
-    }
-  ]);
+  const { setLoading } = useLoader();
+  const [addresses, setAddresses] = useState([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
 
-  const deleteAddress = (id) => {
-    setAddresses(addresses.filter(addr => addr.id !== id));
+  useEffect(() => {
+    loadAddresses();
+  }, []);
+
+  const loadAddresses = async () => {
+    setLoadingAddresses(true);
+    try {
+      const data = await addressService.getAddresses();
+      setAddresses(data);
+    } catch (error) {
+      console.error('Failed to load addresses:', error);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  };
+
+  const deleteAddress = async (id) => {
+    setLoading(true);
+    try {
+      await addressService.deleteAddress(id);
+      setAddresses(addresses.filter(addr => addr.id !== id));
+    } catch (error) {
+      console.error('Failed to delete address:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setAsDefault = async (id) => {
+    setLoading(true);
+    try {
+      await addressService.updateAddress(id, { is_default: true });
+      setAddresses(addresses.map(addr => ({
+        ...addr,
+        is_default: addr.id === id
+      })));
+    } catch (error) {
+      console.error('Failed to set default:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatAddress = (addr) => {
+    return `${addr.street}, ${addr.city}, ${addr.state} - ${addr.pincode}`;
   };
 
   return (
@@ -34,7 +66,9 @@ function SavedAddresses() {
 <div className="content" >
       <div className="address-page">
 
-        {addresses.length === 0 ? (
+        {loadingAddresses ? (
+          <p style={{ textAlign: 'center', padding: '20px' }}>Loading addresses...</p>
+        ) : addresses.length === 0 ? (
           <div className="empty-address">
             <i className='bx bx-map'></i>
             <p>No saved addresses</p>
@@ -44,22 +78,25 @@ function SavedAddresses() {
             <div className="address-card" key={address.id}>
 
               <div className="address-top">
-                <h4>{address.name}</h4>
+                <h4>
+                  <span className="address-label-tag">{address.label}</span>
+                </h4>
 
-                {address.isDefault && (
+                {address.is_default && (
                   <span className="default-badge">
                     Default
                   </span>
                 )}
               </div>
 
-              <p>📞 {address.phone}</p>
-              <p>{address.address}</p>
+              <p>{formatAddress(address)}</p>
 
               <div className="address-actions">
-                <button className="edit-btn">
-                  <i className='bx bx-edit'></i> Edit
-                </button>
+                {!address.is_default && (
+                  <button className="edit-btn" onClick={() => setAsDefault(address.id)}>
+                    <i className='bx bx-check-circle'></i> Set Default
+                  </button>
+                )}
 
                 <button
                   className="delete-btn"

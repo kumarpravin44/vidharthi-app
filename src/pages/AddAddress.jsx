@@ -1,25 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { addressService } from "../services/addressService";
 import { useLoader } from "../context/LoaderContext";
 import "boxicons/css/boxicons.min.css";
 
 function AddAddress() {
 
   const { setLoading } = useLoader();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
-    mobile: "",
-    pincode: "",
-    state: "",
+    label: "home",
+    street: "",
     city: "",
-    address: "",
-    type: "Home",
-    isDefault: false
+    state: "",
+    pincode: "",
+    is_default: false
   });
 
   const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,19 +32,29 @@ function AddAddress() {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
 
-    if (!formData.name || !formData.mobile || !formData.address) {
+    if (!formData.street || !formData.city || !formData.state || !formData.pincode) {
       setPopupMessage("Please fill all required fields");
+      setPopupType("error");
       return;
     }
 
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      await addressService.createAddress(formData);
       setLoading(false);
+      setPopupType("success");
       setPopupMessage("Address Saved Successfully ✅");
-    }, 1500);
+      setTimeout(() => {
+        navigate("/addresses");
+      }, 1500);
+    } catch (error) {
+      setLoading(false);
+      setPopupType("error");
+      setPopupMessage(error.message || "Failed to save address");
+    }
   };
 
   return (
@@ -54,48 +66,31 @@ function AddAddress() {
         <div className="address-form-card">
 
           <div className="form-group">
-            <label>Full Name *</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
+            <label>Address Type</label>
+            <select
+              name="label"
+              value={formData.label}
               onChange={handleChange}
+            >
+              <option value="home">Home</option>
+              <option value="work">Work</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Street Address *</label>
+            <textarea
+              name="street"
+              rows="2"
+              value={formData.street}
+              onChange={handleChange}
+              placeholder="House no, Building, Street, Area"
             />
           </div>
 
           <div className="form-group">
-            <label>Mobile Number *</label>
-            <input
-              type="tel"
-              name="mobile"
-              value={formData.mobile}
-              onChange={handleChange}
-              maxLength="10"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Pincode</label>
-            <input
-              type="text"
-              name="pincode"
-              value={formData.pincode}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>State</label>
-            <input
-              type="text"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>City</label>
+            <label>City *</label>
             <input
               type="text"
               name="city"
@@ -105,32 +100,31 @@ function AddAddress() {
           </div>
 
           <div className="form-group">
-            <label>Full Address *</label>
-            <textarea
-              name="address"
-              rows="3"
-              value={formData.address}
+            <label>State *</label>
+            <input
+              type="text"
+              name="state"
+              value={formData.state}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
-            <label>Address Type</label>
-            <select
-              name="type"
-              value={formData.type}
+            <label>Pincode *</label>
+            <input
+              type="text"
+              name="pincode"
+              value={formData.pincode}
               onChange={handleChange}
-            >
-              <option>Home</option>
-              <option>Work</option>
-            </select>
+              maxLength="10"
+            />
           </div>
 
           <div className="checkbox-group">
             <input
               type="checkbox"
-              name="isDefault"
-              checked={formData.isDefault}
+              name="is_default"
+              checked={formData.is_default}
               onChange={handleChange}
             />
             <label>Set as Default Address</label>
@@ -151,7 +145,13 @@ function AddAddress() {
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i className='bx bx-check-circle success-icon'></i>
+            <i
+              className={`bx ${
+                popupType === "success"
+                  ? "bx-check-circle success-icon"
+                  : "bx-error error-icon"
+              }`}
+            ></i>
             <h3>{popupMessage}</h3>
             <button onClick={() => setPopupMessage("")}>
               OK
