@@ -24,19 +24,19 @@ export const authService = {
     return data;
   },
 
-  // Send OTP to phone
-  sendOTP: async (phone) => {
+  // Send OTP to phone or email
+  sendOTP: async (identifier) => {
     return await fetchAPI(API_ENDPOINTS.AUTH.SEND_OTP, {
       method: 'POST',
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ identifier }),
     });
   },
 
   // Verify OTP
-  verifyOTP: async (phone, code) => {
+  verifyOTP: async (identifier, code) => {
     const data = await fetchAPI(API_ENDPOINTS.AUTH.VERIFY_OTP, {
       method: 'POST',
-      body: JSON.stringify({ phone, code }),
+      body: JSON.stringify({ identifier, code }),
     });
     setAuthTokens(data.access_token, data.refresh_token);
     return data;

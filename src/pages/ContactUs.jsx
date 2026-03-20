@@ -1,9 +1,11 @@
 import { useState } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { useAppSettings } from "../context/AppSettingsContext";
 import "boxicons/css/boxicons.min.css";
 
 function ContactUs() {
+  const { settings: appSettings } = useAppSettings();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,17 +44,17 @@ function ContactUs() {
 
             <div className="info-item">
               <i className='bx bx-phone'></i>
-              <span>+91 98765 43210</span>
+              <span>{appSettings.store_phone || "+91 98765 43210"}</span>
             </div>
 
             <div className="info-item">
               <i className='bx bx-envelope'></i>
-              <span>support@vidharthistore.com</span>
+              <span>{appSettings.store_email || "support@vidharthistore.com"}</span>
             </div>
 
             <div className="info-item">
               <i className='bx bx-map'></i>
-              <span>Pune, Maharashtra, India</span>
+              <span>{appSettings.store_address || "Pune, Maharashtra, India"}</span>
             </div>
 
           </div>

@@ -19,6 +19,7 @@ function AdminHeader() {
     { path: "/admin/categories", icon: "bx-category", label: "Categories" },
     { path: "/admin/banners", icon: "bx-image", label: "Banners" },
     { path: "/admin/offers", icon: "bx-purchase-tag", label: "Offers" },
+    { path: "/admin/settings", icon: "bx-cog", label: "Settings" },
   ];
 
   return (

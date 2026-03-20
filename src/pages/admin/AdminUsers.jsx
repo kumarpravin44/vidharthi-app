@@ -126,12 +126,13 @@ function AdminUsers() {
                       </span>
                     </td>
                     <td>
+                      {!user.is_admin &&
                       <button
                         className={`toggle-btn ${user.is_active ? 'deactivate' : 'activate'}`}
                         onClick={() => handleToggleStatus(user.id, user.is_active)}
                       >
                         {user.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))

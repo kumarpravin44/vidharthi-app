@@ -6,20 +6,23 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { AppSettingsProvider } from "./context/AppSettingsContext";
 import "./style.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <LoaderProvider>
-      <AuthProvider>
-        <CartProvider>
-          <NotificationProvider>
-            <WishlistProvider>
-              <App />
-            </WishlistProvider>
-          </NotificationProvider>
-        </CartProvider>
-      </AuthProvider>
-    </LoaderProvider>
+    <AppSettingsProvider>
+      <LoaderProvider>
+        <AuthProvider>
+          <CartProvider>
+            <NotificationProvider>
+              <WishlistProvider>
+                <App />
+              </WishlistProvider>
+            </NotificationProvider>
+          </CartProvider>
+        </AuthProvider>
+      </LoaderProvider>
+    </AppSettingsProvider>
   </React.StrictMode>
 );

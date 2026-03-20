@@ -70,10 +70,9 @@ function Notifications() {
 
   const handleNotifClick = (notif) => {
     if (!notif.is_read) markAsRead(notif.id);
-    // Navigate to relevant page based on notification type
-    const type = (notif.type || "").toLowerCase();
-    if (type.includes("order") && notif.reference_id) {
-      navigate(`/order/${notif.reference_id}`);
+    // Navigate to order detail if notification has an order_id
+    if (notif.order_id) {
+      navigate(`/order/${notif.order_id}`);
     }
   };
 
@@ -129,8 +128,9 @@ function Notifications() {
                 return (
                   <div
                     key={notif.id}
-                    className={`notif-item ${!notif.is_read ? "unread" : ""}`}
+                    className={`notif-item ${!notif.is_read ? "unread" : ""} ${notif.order_id ? "clickable" : ""}`}
                     onClick={() => handleNotifClick(notif)}
+                    style={notif.order_id ? { cursor: "pointer" } : {}}
                   >
                     <div
                       className="notif-icon-wrap"
@@ -147,7 +147,12 @@ function Notifications() {
                         <p className="notif-title">{notif.title}</p>
                         <span className="notif-time">{formatTime(notif.created_at)}</span>
                       </div>
-                      <p className="notif-message">{notif.message}</p>
+                      <p className="notif-message">{notif.body}</p>
+                      {notif.order_id && (
+                        <span className="notif-order-link">
+                          <i className="bx bx-link-external"></i> View Order
+                        </span>
+                      )}
                     </div>
                   </div>
                 );

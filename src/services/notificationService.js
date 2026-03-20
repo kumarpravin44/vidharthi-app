@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../config/api';
 
 export const notificationService = {
   // Get user notifications
-  getNotifications: async (skip = 0, limit = 30) => {
+  getNotifications: async (skip = 0, limit = 5) => {
     return await fetchAPI(`${API_ENDPOINTS.NOTIFICATIONS.LIST}?skip=${skip}&limit=${limit}`);
   },
 

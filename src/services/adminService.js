@@ -537,6 +537,66 @@ class AdminService {
     return response.json();
   }
 
+  // App Settings (Order Limits)
+  async getSettings() {
+    const token = localStorage.getItem('admin_token');
+    const response = await fetch(`${API_BASE_URL}/admin/settings`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('401: Unauthorized');
+      }
+      const error = await response.json().catch(() => ({ detail: 'Failed to fetch settings' }));
+      throw new Error(error.detail || 'Failed to fetch settings');
+    }
+
+    return response.json();
+  }
+
+  async updateSettings(settingsData) {
+    const token = localStorage.getItem('admin_token');
+    const response = await fetch(`${API_BASE_URL}/admin/settings`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(settingsData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Failed to update settings' }));
+      throw new Error(error.detail || 'Failed to update settings');
+    }
+
+    return response.json();
+  }
+
+  async getTodayOrdersCount() {
+    const token = localStorage.getItem('admin_token');
+    const response = await fetch(`${API_BASE_URL}/admin/settings/today-orders-count`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('401: Unauthorized');
+      }
+      const error = await response.json().catch(() => ({ detail: 'Failed to fetch order count' }));
+      throw new Error(error.detail || 'Failed to fetch order count');
+    }
+
+    return response.json();
+  }
+
   logout() {
     localStorage.removeItem('admin_token');
   }

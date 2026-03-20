@@ -16,7 +16,6 @@ function Login() {
   const [timer, setTimer] = useState(30);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
-  const [debugOtp, setDebugOtp] = useState("");
 
   const otpRefs = useRef([]);
   const navigate = useNavigate();
@@ -75,16 +74,12 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await authService.sendOTP(inputValue);
+      await authService.sendOTP(inputValue);
       setLoading(false);
       setPopupType("success");
       setPopupMessage("OTP Sent Successfully");
       setShowOtp(true);
       setTimer(30);
-      // Debug: Show OTP code (remove in production)
-      if (response.debug_code) {
-        setDebugOtp(response.debug_code);
-      }
     } catch (err) {
       setLoading(false);
       setPopupType("error");
@@ -96,14 +91,11 @@ function Login() {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      const response = await authService.sendOTP(inputValue);
+      await authService.sendOTP(inputValue);
       setLoading(false);
       setTimer(30);
       setPopupType("success");
       setPopupMessage("OTP Resent Successfully");
-      if (response.debug_code) {
-        setDebugOtp(response.debug_code);
-      }
     } catch (err) {
       setLoading(false);
       setPopupType("error");
@@ -165,14 +157,20 @@ function Login() {
         <div className="login-container">
           <div className="login-card">
 
-            {/* Toggle - Only show for phone login */}
+            {/* Toggle - Phone / Email */}
             {!showOtp && (
               <div className="login-toggle">
                 <button
                   className={loginType === "phone" ? "active" : ""}
-                  onClick={() => setLoginType("phone")}
+                  onClick={() => { setLoginType("phone"); setInputValue(""); setError(""); }}
                 >
                   Phone
+                </button>
+                <button
+                  className={loginType === "email" ? "active" : ""}
+                  onClick={() => { setLoginType("email"); setInputValue(""); setError(""); }}
+                >
+                  Email
                 </button>
               </div>
             )}
@@ -198,18 +196,19 @@ function Login() {
                 <button className="primary-btn" onClick={handleSendOtp}>
                   Send OTP
                 </button>
+
+                <p className="register-link">
+                  New user?{" "}
+                  <span onClick={() => navigate("/register")} style={{ color: "#4CAF50", cursor: "pointer", fontWeight: 600 }}>
+                    Register here
+                  </span>
+                </p>
               </>
             )}
 
             {showOtp && (
               <div className="otp-section">
-                <p>Enter 6-digit OTP sent to {inputValue}</p>
-                
-                {debugOtp && (
-                  <p style={{ color: '#ff9800', fontSize: '14px', marginTop: '10px' }}>
-                    Debug OTP: <strong>{debugOtp}</strong>
-                  </p>
-                )}
+                <p>Enter 6-digit OTP sent to {loginType === "email" ? "your email " : ""}{inputValue}</p>
 
                 <div className="otp-inputs">
                   {[0,1,2,3,4,5].map((_, index) => (
