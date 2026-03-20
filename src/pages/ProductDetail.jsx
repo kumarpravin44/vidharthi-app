@@ -1,53 +1,130 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { productService } from "../services/productService";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
+import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
 import "boxicons/css/boxicons.min.css";
 
 import saltImg from "../images/product/salt.webp";
 
 function ProductDetail() {
-
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { isWishlisted, toggle: toggleWishlist } = useWishlist();
 
-  const product = {
-  id,
-  name: "Tata Salt - 1kg",
-  price: 25,
-  oldPrice: 35,
-  description:
-    "High quality iodized salt for daily cooking. Pure and hygienically packed.",
-  image: saltImg
-};
-
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
-
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
 
+  useEffect(() => {
+    loadProduct();
+  }, [id]);
+
+  const loadProduct = async () => {
+    setLoading(true);
+    try {
+      const data = await productService.getProduct(id);
+      setProduct(data);
+    } catch (error) {
+      console.error('Failed to load product:', error);
+      showPopup("Failed to load product", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const increaseQty = () => setQty(qty + 1);
+  
   const decreaseQty = () => {
     if (qty > 1) setQty(qty - 1);
   };
 
-  // 🔥 Wishlist Toggle
-  const handleWishlist = () => {
+  // Wishlist Toggle
+  const handleWishlist = async () => {
+    if (!isAuthenticated) {
+      showPopup("Please login to add to wishlist", "error");
+      setTimeout(() => navigate("/login"), 1500);
+      return;
+    }
+    try {
+      const result = await toggleWishlist(product.id);
+      if (result.wishlisted) {
+        showPopup("Added to wishlist ❤️", "success");
+      } else {
+        showPopup("Removed from wishlist", "success");
+      }
+    } catch (err) {
+      showPopup(err.message || "Failed to update wishlist", "error");
+    }
+  };
 
-    const newState = !wishlisted;
-    setWishlisted(newState);
+  const showPopup = (message, type = "success") => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setTimeout(() => setPopupMessage(""), 1000);
+  };
 
-    if (newState) {
-      setPopupType("success");
-      setPopupMessage("Added to wishlist ❤️");
-    } else {
-      setPopupType("error");
-      setPopupMessage("Removed from wishlist ❌");
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      showPopup("Please login to add items to cart", "error");
+      setTimeout(() => navigate("/login"), 2000);
+      return;
     }
 
-    // Auto close after 2 sec
-    setTimeout(() => setPopupMessage(""), 2000);
+    try {
+      await addItem(product.id, qty, product);
+      showPopup("Added to cart 🛒", "success");
+    } catch (error) {
+      showPopup(error.message || "Failed to add to cart", "error");
+    }
   };
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      showPopup("Please login to continue", "error");
+      setTimeout(() => navigate("/login"), 2000);
+      return;
+    }
+
+    try {
+      await addItem(product.id, qty, product);
+      navigate("/checkout");
+    } catch (error) {
+      showPopup(error.message || "Failed to proceed", "error");
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <InternalHeader title="" showSearch />
+        <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
+          <p>Loading product...</p>
+        </div>
+        <BottomNav />
+      </>
+    );
+  }
+
+  if (!product) {
+    return (
+      <>
+        <InternalHeader title="" showSearch />
+        <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
+          <p>Product not found</p>
+        </div>
+        <BottomNav />
+      </>
+    );
+  }
 
   return (
     <>
@@ -57,7 +134,11 @@ function ProductDetail() {
 
         {/* Image Section */}
         <div className="product-image-section">
-          <img src={product.image} alt={product.name} />
+          <img 
+            src={getImageWithFallback(product.image_url)} 
+            alt={product.name}
+            onError={(e) => e.target.src = noImagePlaceholder}
+          />
 
           <div
             className="wishlist-toggle"
@@ -65,15 +146,16 @@ function ProductDetail() {
           >
             <i
               className={`bx ${
-                wishlisted ? "bxs-heart" : "bx-heart"
+                product && isWishlisted(product.id) ? "bxs-heart" : "bx-heart"
               }`}
             ></i>
           </div>
-           <span className="discount-badge">
-  {Math.round(
-    ((product.oldPrice - product.price) / product.oldPrice) * 100
-  )}% OFF
-</span>
+          
+          {product.mrp && product.mrp > product.price && (
+            <span className="discount-badge">
+              {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+            </span>
+          )}
         </div>
 
         {/* Info Section */}
@@ -81,43 +163,53 @@ function ProductDetail() {
 
           <h2>{product.name}</h2>
           <p className="product-price">
-            <span>₹ {product.price}</span> <span className="old-price">₹ {product.oldPrice}</span>
-            </p>
-         
-
-          <p className="product-description">
-            {product.description}
+            <span>₹ {product.price}</span> 
+            {product.mrp && product.mrp > product.price && (
+              <span className="old-price">₹ {product.mrp}</span>
+            )}
           </p>
+         
+          {product.description && (
+            <p className="product-description">
+              {product.description}
+            </p>
+          )}
 
-          <div className="qty-controls detail-qty">
-            <button onClick={decreaseQty}>-</button>
-            <span>{qty}</span>
-            <button onClick={increaseQty}>+</button>
-          </div>
+          {product.stock !== undefined && (
+            <p className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+              {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+            </p>
+          )}
+
+          {product.stock > 0 && (
+            <div className="qty-controls detail-qty">
+              <button onClick={decreaseQty}>-</button>
+              <span>{qty}</span>
+              <button onClick={increaseQty}>+</button>
+            </div>
+          )}
 
         </div>
 
       </div>
 
       {/* Sticky Bottom Buttons */}
-      <div className="product-action-bar">
-        <button
-          className="add-cart-btn"
-          onClick={() => {
-            setPopupType("success");
-            setPopupMessage("Added to cart 🛒");
-            setTimeout(() => setPopupMessage(""), 2000);
-          }}
-        >
-          Add to Cart
-        </button>
+      {product.stock > 0 && (
+        <div className="product-action-bar">
+          <button
+            className="add-cart-btn"
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </button>
 
-        <button className="buy-now-btn">
-          Buy Now
-        </button>
-      </div>
+          <button className="buy-now-btn" onClick={handleBuyNow}>
+            Buy Now
+          </button>
+        </div>
+      )}
 
-      {/* 🔥 Modal Popup */}
+      {/* Modal Popup */}
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">

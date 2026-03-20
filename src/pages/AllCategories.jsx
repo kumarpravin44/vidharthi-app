@@ -1,52 +1,70 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { productService } from "../services/productService";
 
 import saltImg from "../images/product/salt.webp";
 import riceImg from "../images/product/rice.webp";
 import drinksImg from "../images/product/drinks.webp";
 import dryfruitsImg from "../images/product/dryfruits.webp";
+import Loader from "../components/Loader";
 
 function AllCategories() {
-
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    { id: 1, name: "Salt & Sugar", image: saltImg, count: 12 },
-    { id: 2, name: "Rice", image: riceImg, count: 8 },
-    { id: 3, name: "Drinks", image: drinksImg, count: 15 },
-    { id: 4, name: "Dry Fruits", image: dryfruitsImg, count: 6 },
-    { id: 5, name: "Snacks", image: saltImg, count: 10 },
-    { id: 6, name: "Dairy", image: riceImg, count: 9 },
-    { id: 7, name: "Spices", image: drinksImg, count: 7 },
-    { id: 8, name: "Bakery", image: dryfruitsImg, count: 5 }
-  ];
+  const defaultImages = {
+    0: saltImg,
+    1: riceImg,
+    2: drinksImg,
+    3: dryfruitsImg,
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const data = await productService.getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <InternalHeader title="" showSearch />
+      <InternalHeader title="All Categories" showSearch />
 
       <div className="all-categories-page content">
-
-        <div className="categories-grid-new">
-
-          {categories.map(cat => (
-            <div
-              key={cat.id}
-              className="category-box"
-              onClick={() => navigate(`/category/${cat.id}`)}
-            >
-              <img src={cat.image} alt={cat.name} />
-              <div className="category-info">
-                <h4>{cat.name}</h4>
-                <p>{cat.count} Items</p>
+        {loading ? (
+          <Loader text="Loading All Categories..." />
+        ) : (
+          <div className="categories-grid-new">
+            {categories.map((cat, index) => (
+              <div
+                key={cat.id}
+                className="category-box"
+                onClick={() => navigate(`/category/${cat.id}`)}
+              >
+                <img 
+                  src={cat.image_url || defaultImages[index % 4]} 
+                  alt={cat.name} 
+                />
+                <div className="category-info">
+                  <h4>{cat.name}</h4>
+                  {cat.description && <p>{cat.description}</p>}
+                </div>
+                <i className='bx bx-chevron-right'></i>
               </div>
-              <i className='bx bx-chevron-right'></i>
-            </div>
-          ))}
-
-        </div>
-
+            ))}
+          </div>
+        )}
       </div>
 
       <BottomNav />

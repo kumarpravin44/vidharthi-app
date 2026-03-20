@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
@@ -9,17 +9,15 @@ import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
 import "boxicons/css/boxicons.min.css";
 
-import saltImg from "../images/product/salt.webp";
-
-function CategoryProducts() {
-  const { id } = useParams();
+function SearchResults() {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
 
   const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -27,27 +25,19 @@ function CategoryProducts() {
   const [filterBy, setFilterBy] = useState("");
 
   useEffect(() => {
-    loadCategoryData();
-  }, [id, sortBy]); // Reload when category or sort changes
+    if (searchQuery) {
+      loadSearchResults();
+    }
+  }, [searchQuery]);
 
-  const loadCategoryData = async () => {
+  const loadSearchResults = async () => {
     setLoading(true);
     try {
-      // Load category details
-      const categoryData = await productService.getCategory(id);
-      setCategory(categoryData);
-
-      // Load products for this category
-      // If sorting by popular, fetch from backend with sort parameter
-      const params = { category_id: id };
-      if (sortBy === 'popular') {
-        params.sort_by = 'popular';
-      }
-      const productsData = await productService.getProducts(params);
+      const productsData = await productService.getProducts({ search: searchQuery });
       setProducts(productsData);
     } catch (error) {
-      console.error('Failed to load category products:', error);
-      showPopup("Failed to load products", "error");
+      console.error('Failed to load search results:', error);
+      showPopup("Failed to load search results", "error");
     } finally {
       setLoading(false);
     }
@@ -65,14 +55,17 @@ function CategoryProducts() {
       updatedProducts = updatedProducts.filter(p => p.price > 50);
     }
 
-    // Sort (for non-popular sorts, since popular comes pre-sorted from backend)
+    // Sort
     if (sortBy === "lowToHigh") {
       updatedProducts.sort((a, b) => a.price - b.price);
     }
     if (sortBy === "highToLow") {
       updatedProducts.sort((a, b) => b.price - a.price);
     }
-    // Popular sort is already handled by backend query
+    if (sortBy === "popular") {
+      // Popular products (assuming they come sorted from backend)
+      // This could be enhanced with actual order count data
+    }
 
     return updatedProducts;
   }, [products, sortBy, filterBy]);
@@ -124,9 +117,9 @@ function CategoryProducts() {
   if (loading) {
     return (
       <>
-        <InternalHeader title="" showSearch />
+        <InternalHeader title="Search Results" showSearch />
         <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
-          <p>Loading products...</p>
+          <p>Searching for "{searchQuery}"...</p>
         </div>
         <BottomNav />
       </>
@@ -135,7 +128,7 @@ function CategoryProducts() {
 
   return (
     <>
-      <InternalHeader title={category?.name || "Products"} showSearch />
+      <InternalHeader title={`Search: "${searchQuery}"`} showSearch />
 
       <div className="category-products-page content">
         {/* Filter + Sort Bar */}
@@ -156,77 +149,82 @@ function CategoryProducts() {
 
         {filteredProducts.length === 0 ? (
           <div className="empty-products">
-            <i className='bx bx-package'></i>
-            <p>No products found</p>
+            <i className='bx bx-search-alt'></i>
+            <p>No products found for "{searchQuery}"</p>
+            <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+              Try different keywords or browse categories
+            </p>
           </div>
         ) : (
-          <div className="products-grid">
-            {filteredProducts.map(product => (
-              <div
-                className="product-card"
-                key={product.id}
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-
+          <>
+            <div className="search-result-count">
+              {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+            </div>
+            <div className="products-grid">
+              {filteredProducts.map(product => (
                 <div
-                  className="wishlist-icon"
-                  onClick={(e) => handleWishlist(e, product.id)}
+                  className="product-card"
+                  key={product.id}
+                  onClick={() => navigate(`/product/${product.id}`)}
                 >
-                  <i className={`bx ${isWishlisted(product.id) ? 'bxs-heart' : 'bx-heart'}`}></i>
-                </div>
 
-                <img 
-                  src={getImageWithFallback(product.image_url)} 
-                  alt={product.name}
-                  onError={(e) => e.target.src = noImagePlaceholder}
-                />
+                  <div
+                    className="wishlist-icon"
+                    onClick={(e) => handleWishlist(e, product.id)}
+                  >
+                    <i className={`bx ${isWishlisted(product.id) ? 'bxs-heart' : 'bx-heart'}`}></i>
+                  </div>
 
-                <h4>{product.name}</h4>
+                  <img 
+                    src={getImageWithFallback(product.image_url)} 
+                    alt={product.name}
+                    onError={(e) => e.target.src = noImagePlaceholder}
+                  />
 
-                <div className="price-section">
-                  <span className="new-price">₹ {product.price}</span>
+                  <h4>{product.name}</h4>
+
+                  <div className="price-section">
+                    <span className="new-price">₹ {product.price}</span>
+                    {product.mrp && product.mrp > product.price && (
+                      <span className="old-price">₹ {product.mrp}</span>
+                    )}
+                  </div>
+
                   {product.mrp && product.mrp > product.price && (
-                    <span className="old-price">₹ {product.mrp}</span>
+                    <span className="discount-badge">
+                      {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                    </span>
                   )}
+
+                  {product.is_out_of_stock && (
+                    <div className="out-of-stock-badge">Out of Stock</div>
+                  )}
+
+                  <button
+                    className="add-cart-btn"
+                    onClick={(e) => handleAddToCart(e, product)}
+                    disabled={product.is_out_of_stock}
+                  >
+                    {product.is_out_of_stock ? 'Out of Stock' : 'Add to Cart'}
+                  </button>
+
                 </div>
-
-                {product.mrp && product.mrp > product.price && (
-                  <span className="discount-badge">
-                    {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
-                  </span>
-                )}
-
-                <button
-                  className="add-cart-btn"
-                  onClick={(e) => handleAddToCart(e, product)}
-                >
-                  Add to Cart
-                </button>
-
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
+      <BottomNav />
+
+      {/* Popup Notification */}
       {popupMessage && (
-        <div className="popup-overlay">
-          <div className="popup-box">
-            <i
-              className={`bx ${
-                popupType === "success"
-                  ? "bx-check-circle success-icon"
-                  : "bx-error error-icon"
-              }`}
-            ></i>
-            <h3>{popupMessage}</h3>
-          </div>
+        <div className={`popup-message ${popupType}`}>
+          {popupMessage}
         </div>
       )}
-
-      <BottomNav />
     </>
   );
 }
 
-export default CategoryProducts;
+export default SearchResults;
