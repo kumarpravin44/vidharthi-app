@@ -23,7 +23,6 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      debugger;
       const data = await productService.getProducts({ category_id: categoryId , limit:limit});
       setProducts(data.slice(0, 8)); // Show max 8 products on home page
     } catch (error) {
