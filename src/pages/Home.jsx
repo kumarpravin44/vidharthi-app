@@ -50,6 +50,7 @@ function Home() {
                   <CategoryProducts 
                     categoryId={parentCategory.id} 
                     categoryName={parentCategory.name}
+                    limit={4}
                   />
                 )}
               </div>

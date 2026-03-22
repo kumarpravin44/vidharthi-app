@@ -7,7 +7,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
 import "boxicons/css/boxicons.min.css";
 
-function CategoryProducts({ categoryId, categoryName }) {
+function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
@@ -23,7 +23,8 @@ function CategoryProducts({ categoryId, categoryName }) {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      const data = await productService.getProducts({ category_id: categoryId });
+      debugger;
+      const data = await productService.getProducts({ category_id: categoryId , limit:limit});
       setProducts(data.slice(0, 8)); // Show max 8 products on home page
     } catch (error) {
       console.error('Failed to load products:', error);
