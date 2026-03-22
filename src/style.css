@@ -453,6 +453,14 @@ img{
 .cart-details{
   flex:1;
 }
+.cart-details h4 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-weight: 500;
+}
 
 .qty-controls{
   display:flex;
@@ -1347,8 +1355,14 @@ img{
   flex:1;
 }
 
-.wishlist-details h4{
-  margin-bottom:5px;
+.wishlist-details h4 {
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-weight: 500;
 }
 
 .wishlist-details p{
@@ -1582,7 +1596,7 @@ textarea{
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     font-weight: 500;
 }
 .in-stock {

@@ -10,6 +10,8 @@ import "boxicons/css/boxicons.min.css";
 function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
 
@@ -32,18 +34,32 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
     }
   };
 
+  const showPopup = (message, type = "success") => {
+    setPopupType(type);
+    setPopupMessage(message);
+    setTimeout(() => setPopupMessage(""), 1000);
+  };
+
   const handleAddToCart = async (e, product) => {
+    e.preventDefault();
     e.stopPropagation();
-    
+
     if (!isAuthenticated) {
-      navigate("/login");
+      showPopup("Please login to add items to cart", "error");
+      setTimeout(() => navigate("/login"), 2000);
+      return;
+    }
+
+    if (product.is_out_of_stock) {
+      showPopup("Product is out of stock", "error");
       return;
     }
 
     try {
       await addItem(product.id, 1, product);
+      showPopup("Added to cart 🛒", "success");
     } catch (error) {
-      console.error(error);
+      showPopup(error.message || "Failed to add to cart", "error");
     }
   };
 
@@ -79,6 +95,21 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   }
 
   return (
+    <div>
+    {popupMessage && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <i
+              className={`bx ${
+                popupType === "success"
+                  ? "bx-check-circle success-icon"
+                  : "bx-error error-icon"
+              }`}
+            ></i>
+            <h3>{popupMessage}</h3>
+          </div>
+        </div>
+      )}
     <div className="products-grid">
       {products.map(product => (
         <div
@@ -132,6 +163,7 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
           <p>View All {categoryName}</p>
         </div>
       )}
+    </div>
     </div>
   );
 }
