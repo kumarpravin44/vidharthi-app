@@ -147,9 +147,14 @@ grid-gap: 2px;
     padding: 9px;
 }
 
-.category-card p{
-    margin-top:10px;
+.category-card p {
+    margin-top: 10px;
     font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 /* Hero Banner */
@@ -896,20 +901,18 @@ img{
   flex-wrap:wrap;
 }
 
-.repeat-order-btn{
-  padding:8px 14px;
-  background:#fff8f0;
-  color:#ff7a00;
-  border:2px solid #ff7a00;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:14px;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:4px;
-  transition:all .2s;
-  white-space:nowrap;
+.repeat-order-btn {
+    padding: 8px 10px;
+    background: #fff8f0;
+    color: #ff7a00;
+    border: 1px solid #ff7a00;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    transition: all .2s;
+    white-space: nowrap;
 }
 
 .repeat-order-btn:hover{
@@ -1187,13 +1190,17 @@ img{
   align-items:center;
 }
 
-.view-btn{
-  padding:6px 14px;
-  background:#ff7a00;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+.view-btn {
+    padding: 8px 10px;
+    background: #ff7a00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: 1px solid #ff7a00;
 }
 
 .status-badge{
@@ -1640,9 +1647,9 @@ textarea{
   font-weight:500;
 }
 
-.login-toggle button.active{
-  background:#ff7a00;
-  color:#fff;
+.login-toggle button.active {
+    background: #343434;
+    color: #fff;
 }
 
 .product-detail-page{
@@ -3818,15 +3825,15 @@ textarea{
 }
 
 .view-btn {
-  padding: 8px 16px;
-  background: #ff7a00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
+    padding: 8px 10px;
+    background: #ff7a00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .view-btn:hover {
@@ -4970,6 +4977,10 @@ textarea{
   font-size: 15px;
   font-weight: 600;
   margin: 0;
+}
+
+.category-group-heading {
+    margin-bottom: 15px;
 }
 
 @media (max-width: 768px) {

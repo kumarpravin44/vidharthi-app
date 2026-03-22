@@ -79,15 +79,15 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   }
 
   return (
-    <div className="home-products-grid">
+    <div className="products-grid">
       {products.map(product => (
         <div
-          className="product-card-mini"
+          className="product-card"
           key={product.id}
           onClick={() => navigate(`/product/${product.id}`)}
         >
           <div
-            className="wishlist-icon-mini"
+            className="wishlist-icon"
             onClick={(e) => handleWishlist(e, product.id)}
           >
             <i className={`bx ${isWishlisted(product.id) ? 'bxs-heart' : 'bx-heart'}`}></i>
@@ -115,7 +115,7 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
           )}
 
           <button
-            className="add-cart-btn-mini"
+            className="add-cart-btn"
             onClick={(e) => handleAddToCart(e, product)}
           >
             Add to Cart

@@ -292,7 +292,6 @@ function Checkout() {
                       value={newAddress.pincode}
                       onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
                       className="checkout-input"
-                      style={{ maxWidth: '180px' }}
                     />
                     <button
                       className="save-address-btn"
@@ -373,7 +372,7 @@ function Checkout() {
               </label>
             </div>
 
-            <div className="payment-option">
+            {/* <div className="payment-option">
               <label>
                 <input
                   type="radio"
@@ -383,7 +382,7 @@ function Checkout() {
                 />
                 Online Payment
               </label>
-            </div>
+            </div> */}
           </div>
 
         </div>

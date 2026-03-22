@@ -155,14 +155,14 @@ function MyOrders() {
                       onClick={(e) => { e.stopPropagation(); handleRepeatOrder(order); }}
                       disabled={reordering === order.id}
                     >
-                      <i className='bx bx-revision'></i>
+                      
                       {reordering === order.id ? "Adding..." : "Repeat"}
                     </button>
                     <button 
                       className="view-btn"
                       onClick={() => navigate(`/order/${order.id}`)}
                     >
-                      View Details
+                      View
                     </button>
                   </div>
                 </div>

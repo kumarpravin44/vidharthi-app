@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { productService } from "../services/productService";
 import { useCart } from "../context/CartContext";
 
-const NAV_ICONS = ["bx-leaf", "bx-store", "bx-star", "bx-grid-alt", "bx-tag"];
+const NAV_ICONS = ["bx-store", "bx-leaf",  "bx-star", "bx-grid-alt", "bx-tag"];
 
 function BottomNav() {
   const location = useLocation();
