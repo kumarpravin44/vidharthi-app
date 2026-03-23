@@ -60,7 +60,7 @@ function ContactUs() {
           </div>
 
           {/* Contact Form */}
-          <form onSubmit={handleSubmit} className="contact-form">
+          {/* <form onSubmit={handleSubmit} className="contact-form">
 
             <input
               type="text"
@@ -93,7 +93,7 @@ function ContactUs() {
               Send Message
             </button>
 
-          </form>
+          </form> */}
 
         </div>
 

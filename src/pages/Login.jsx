@@ -152,10 +152,18 @@ function Login() {
   return (
     <>
       <InternalHeader title="Login" />
+      
 
       <div className="content">
-        <div className="login-container">
+        
+        
           <div className="login-card">
+            <div className="login-container">
+          <div className="login-top-icon">
+  <i className="bx bx-lock-alt"></i>
+  <h2>Welcome Back</h2>
+  <p>Login to continue</p>
+</div>
 
             {/* Toggle - Phone / Email */}
             {!showOtp && (

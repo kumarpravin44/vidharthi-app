@@ -77,9 +77,12 @@ function Register() {
       <div className="content">
         <div className="login-container">
           <div className="login-card">
-            <h3 style={{ textAlign: "center", marginBottom: "15px", color: "#333" }}>
-              Create Account
-            </h3>
+            <div className="login-top-icon">
+  <i className="bx bx-user-plus"></i>
+  <h2>Create Account</h2>
+  
+</div>
+           
 
             <div className="input-box">
               <i className="bx bx-user"></i>

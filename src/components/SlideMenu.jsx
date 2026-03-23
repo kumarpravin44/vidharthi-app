@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { getAvatarUrl } from '../utils/placeholderImage';
 
 function SlideMenu({ open, setOpen }) {
   const navigate = useNavigate();
@@ -51,19 +52,13 @@ function SlideMenu({ open, setOpen }) {
           <div style={{ padding: "15px", borderBottom: "1px solid #eee" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  background: "#4CAF50",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontSize: "18px",
-                }}
+                className="profile-avatar"
               >
-                <i className="bx bx-user"></i>
+                {user.avatar_url ? (
+                                  <img src={getAvatarUrl(user.avatar_url)} alt={user.full_name} />
+                                ) : (
+                                  <i className='bx bx-user'></i>
+                                )}
               </div>
               <div>
                 <h4 style={{ margin: 0, fontSize: "16px" }}>
