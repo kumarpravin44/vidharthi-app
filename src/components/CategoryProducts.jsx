@@ -115,7 +115,7 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
         <div
           className="product-card"
           key={product.id}
-          onClick={() => navigate(`/product/${product.id}`)}
+          onClick={() => navigate(`/product/${product.id}/details`)}
         >
           <div
             className="wishlist-icon"

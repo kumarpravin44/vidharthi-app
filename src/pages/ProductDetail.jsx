@@ -25,24 +25,7 @@ function ProductDetail() {
   const [popupType, setPopupType] = useState("success");
 
   useEffect(() => {
-    const loadCategoryDetails = async () => {
-      setLoading(true);
-      try {
-        const res = await productService.getCategoryDetails(id); // new service method
-        if (res.type === "subcategories") {
-          setSubcategories(res.data);
-          setProducts([]);
-        } else {
-          setProducts(res.data);
-          setSubcategories([]);
-        }
-      } catch (e) {
-        // handle error
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCategoryDetails();
+    loadProduct();
   }, [id]);
 
   const loadProduct = async () => {

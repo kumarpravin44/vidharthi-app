@@ -53,6 +53,7 @@ function App() {
         <Route path="/add-address" element={<AddAddress />} />
         <Route path="/category/:id" element={<CategoryProducts />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/product/:id/details" element={<ProductDetail />} />
         <Route path="/all-categories" element={<AllCategories />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
