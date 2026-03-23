@@ -1,5 +1,5 @@
 import { fetchAPI, setAuthTokens, clearAuthTokens } from './api';
-import { API_ENDPOINTS } from '../config/api';
+import { API_ENDPOINTS, API_BASE_URL } from '../config/api';
 
 export const authService = {
   // Register new user
@@ -53,6 +53,25 @@ export const authService = {
       method: 'PATCH',
       body: JSON.stringify(userData),
     });
+  },
+
+  // Upload avatar image
+  uploadAvatar: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.UPLOAD_AVATAR}`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Failed to upload avatar');
+    }
+    return await response.json();
   },
 
   // Change password

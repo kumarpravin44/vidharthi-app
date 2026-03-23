@@ -22,3 +22,22 @@ export const getImageWithFallback = (imageUrl, baseUrl = 'http://localhost:8000'
   const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
   return `${baseUrl}${cleanPath}`;
 };
+
+/**
+ * Get avatar URL with proper server prefix
+ * @param {string} avatarUrl - The avatar URL from backend (could be full or relative)
+ * @param {string} baseUrl - The base server URL
+ * @returns {string|null} Full avatar URL or null
+ */
+export const getAvatarUrl = (avatarUrl, baseUrl = 'http://localhost:8000') => {
+  if (!avatarUrl) return null;
+  
+  // If already a full URL, return as-is
+  if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+    return avatarUrl;
+  }
+  
+  // If relative path, construct full URL
+  const cleanPath = avatarUrl.startsWith('/') ? avatarUrl : `/${avatarUrl}`;
+  return `${baseUrl}${cleanPath}`;
+};

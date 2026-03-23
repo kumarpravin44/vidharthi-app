@@ -1,28 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { productService } from "../services/productService";
 import { useCart } from "../context/CartContext";
+import { useNavigation } from "../context/NavigationContext";
 
 const NAV_ICONS = ["bx-store", "bx-leaf",  "bx-star", "bx-grid-alt", "bx-tag"];
 
 function BottomNav() {
   const location = useLocation();
   const { itemCount } = useCart();
-  const [navCategories, setNavCategories] = useState([]);
-
-  useEffect(() => {
-    loadNavCategories();
-  }, []);
-
-  const loadNavCategories = async () => {
-    try {
-      // This will use cache if available and not expired
-      const categories = await productService.getNavCategories();
-      setNavCategories(categories);
-    } catch (error) {
-      console.error('Failed to load nav categories:', error);
-    }
-  };
+  const { navCategories } = useNavigation();
 
   return (
     <div className="bottom-nav">

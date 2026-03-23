@@ -322,7 +322,7 @@ function AdminSettings() {
                     </div>
                   </div>
                   <div className={`form-group ${!settings.veg_order_enabled ? "disabled" : ""}`}>
-                    <label>Start Hour (UTC, 0–23)</label>
+                    <label>Start Hour</label>
                     <input type="number" min="0" max="23"
                       value={settings.veg_order_start_hour}
                       onChange={e => updateField("veg_order_start_hour", e.target.value)}
@@ -330,7 +330,7 @@ function AdminSettings() {
                     <span className="form-hint">Orders open at this hour</span>
                   </div>
                   <div className={`form-group ${!settings.veg_order_enabled ? "disabled" : ""}`}>
-                    <label>End Hour (UTC, 0–23)</label>
+                    <label>End Hour</label>
                     <input type="number" min="0" max="23"
                       value={settings.veg_order_end_hour}
                       onChange={e => updateField("veg_order_end_hour", e.target.value)}
@@ -341,7 +341,7 @@ function AdminSettings() {
                 {settings.veg_order_enabled && (
                   <div className="info-banner">
                     <i className='bx bx-info-circle'></i>
-                    Vegetable orders will only be accepted between <strong>{settings.veg_order_start_hour}:00</strong> and <strong>{settings.veg_order_end_hour}:00 UTC</strong>.
+                    Vegetable orders will only be accepted between <strong>{settings.veg_order_start_hour}:00 AM</strong> and <strong>{settings.veg_order_end_hour}:00 AM</strong>.
                   </div>
                 )}
               </div>

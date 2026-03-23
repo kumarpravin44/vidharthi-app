@@ -10,9 +10,6 @@ function Register() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
@@ -43,16 +40,8 @@ function Register() {
       setError("Enter valid 10 digit mobile number");
       return false;
     }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Enter a valid email address");
-      return false;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
       return false;
     }
     return true;
@@ -68,8 +57,7 @@ function Register() {
       await register({
         full_name: fullName.trim(),
         phone: phone,
-        email: email || undefined,
-        password: password,
+        email: email,
       });
       setLoading(false);
       setPopupType("success");
@@ -117,34 +105,9 @@ function Register() {
               <i className="bx bx-envelope"></i>
               <input
                 type="email"
-                placeholder="Email Address (optional)"
+                placeholder="Email Address *"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="input-box">
-              <i className="bx bx-lock-alt"></i>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password * (min 8 characters)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <i
-                className={`bx ${showPassword ? "bx-show" : "bx-hide"}`}
-                style={{ cursor: "pointer", position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "#999" }}
-                onClick={() => setShowPassword(!showPassword)}
-              ></i>
-            </div>
-
-            <div className="input-box">
-              <i className="bx bx-lock"></i>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm Password *"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
 
