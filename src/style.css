@@ -462,11 +462,11 @@ img{
     font-weight: 500;
 }
 
-.qty-controls{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:8px;
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
 }
 
 .qty-controls button{
@@ -1612,6 +1612,7 @@ textarea{
 .in-stock {
     color: #00b600;
     font-weight: 500;
+    margin-bottom: 10px;
 }
 .out-of-stock {
     color: #f10000;
