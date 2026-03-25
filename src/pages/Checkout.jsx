@@ -39,9 +39,30 @@ function Checkout() {
   });
   const [savingAddress, setSavingAddress] = useState(false);
 
-  const deliveryCharge = cart && cart.items && cart.items.length === 1
-    ? appSettings.delivery_charge_single
-    : appSettings.delivery_charge_multiple;
+  // Calculate delivery charge using tiers (matching backend logic)
+  const calculateDeliveryCharge = () => {
+    if (!cart || !cart.items) return 0;
+    
+    const tiers = appSettings.delivery_charge_tiers;
+    if (tiers && Array.isArray(tiers) && tiers.length > 0) {
+      // Find the first tier where totalAmount is within min/max
+      for (const tier of tiers) {
+        const minPrice = tier.min_price || 0;
+        const maxPrice = tier.max_price;
+        if (totalAmount >= minPrice && (maxPrice === null || maxPrice === undefined || totalAmount <= maxPrice)) {
+          return tier.delivery_charge || 0;
+        }
+      }
+      return 0; // No matching tier, free delivery
+    } else {
+      // Fallback to old logic if tiers not configured
+      return cart.items.length === 1
+        ? appSettings.delivery_charge_single
+        : appSettings.delivery_charge_multiple;
+    }
+  };
+  
+  const deliveryCharge = calculateDeliveryCharge();
   const total = totalAmount + deliveryCharge;
 
   useEffect(() => {

@@ -11,6 +11,7 @@ export const AppSettingsProvider = ({ children }) => {
     store_address: null,
     delivery_charge_single: 10,
     delivery_charge_multiple: 15,
+    delivery_charge_tiers: null,
     veg_order_start_hour: 5,
     veg_order_end_hour: 9,
     veg_order_enabled: true,

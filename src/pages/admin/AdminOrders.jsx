@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
 import "boxicons/css/boxicons.min.css";
+import Loader from "../../components/Loader";
 
 function AdminOrders() {
   const navigate = useNavigate();
@@ -43,12 +44,16 @@ function AdminOrders() {
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
+    setLoading(true);
     try {
+      debugger;
       await adminService.updateOrderStatus(orderId, newStatus);
       showPopup("Order status updated successfully");
-      loadOrders();
+      await loadOrders();
     } catch (error) {
       showPopup("Failed to update order status");
+    } finally {
+      // setLoading(false);
     }
   };
 
@@ -75,14 +80,7 @@ function AdminOrders() {
   };
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading orders..." />;
   }
 
   return (

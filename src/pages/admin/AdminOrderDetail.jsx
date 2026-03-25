@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
+import Loader from "../../components/Loader";
 import "boxicons/css/boxicons.min.css";
 
 function AdminOrderDetail() {
@@ -80,14 +81,7 @@ function AdminOrderDetail() {
   };
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading order details...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading order details..." />;
   }
 
   if (!order) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
+import Loader from "../../components/Loader";
 import "boxicons/css/boxicons.min.css";
 
 function AdminBanners() {
@@ -118,14 +119,7 @@ function AdminBanners() {
   };
 
   if (loading) {
-    return (
-      <div>
-        <AdminHeader />
-        <div className="admin-content">
-          <p>Loading banners...</p>
-        </div>
-      </div>
-    );
+    return <Loader text="Loading banners..." />;
   }
 
   return (

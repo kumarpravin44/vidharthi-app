@@ -10,11 +10,13 @@ import { AppSettingsProvider } from "./context/AppSettingsContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import "./style.css";
 
+
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AppSettingsProvider>
-      <LoaderProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <LoaderProvider>
           <NavigationProvider>
             <CartProvider>
               <NotificationProvider>
@@ -24,8 +26,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </NotificationProvider>
             </CartProvider>
           </NavigationProvider>
-        </AuthProvider>
-      </LoaderProvider>
+        </LoaderProvider>
+      </AuthProvider>
     </AppSettingsProvider>
   </React.StrictMode>
 );

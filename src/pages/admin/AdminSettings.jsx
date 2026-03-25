@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
+import Loader from "../../components/Loader";
 import "boxicons/css/boxicons.min.css";
+import "../../tier-styles.css";
 
 function AdminSettings() {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ function AdminSettings() {
     order_limit_message: "",
     delivery_charge_single: 10,
     delivery_charge_multiple: 15,
+    delivery_charge_tiers: [],
     veg_order_start_hour: 5,
     veg_order_end_hour: 9,
     veg_order_enabled: true,
@@ -33,6 +36,8 @@ function AdminSettings() {
   });
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
+  const [tierForm, setTierForm] = useState({ min_price: "", max_price: "", delivery_charge: "" });
+  const [editingTierIndex, setEditingTierIndex] = useState(null);
 
   useEffect(() => {
     if (!adminService.isAuthenticated()) {
@@ -54,15 +59,11 @@ function AdminSettings() {
         store_phone: settingsData.store_phone || "",
         store_email: settingsData.store_email || "",
         store_address: settingsData.store_address || "",
+        delivery_charge_tiers: settingsData.delivery_charge_tiers || [],
       });
       setOrderStats(statsData);
     } catch (error) {
-      if (error.message.includes("401") || error.message.includes("403")) {
-        adminService.logout();
-        navigate("/admin/login");
-      } else {
-        showPopup("Failed to load settings", "error");
-      }
+      showPopup("Failed to load settings", "error");
     } finally {
       setLoading(false);
     }
@@ -92,6 +93,10 @@ function AdminSettings() {
       if (!payload.store_phone) payload.store_phone = null;
       if (!payload.store_email) payload.store_email = null;
       if (!payload.store_address) payload.store_address = null;
+      // Send empty tier array as null
+      if (!payload.delivery_charge_tiers || payload.delivery_charge_tiers.length === 0) {
+        payload.delivery_charge_tiers = null;
+      }
 
       const updated = await adminService.updateSettings(payload);
       setSettings({
@@ -99,6 +104,7 @@ function AdminSettings() {
         store_phone: updated.store_phone || "",
         store_email: updated.store_email || "",
         store_address: updated.store_address || "",
+        delivery_charge_tiers: updated.delivery_charge_tiers || [],
       });
       const statsData = await adminService.getTodayOrdersCount();
       setOrderStats(statsData);
@@ -114,6 +120,57 @@ function AdminSettings() {
     setSettings(prev => ({ ...prev, [field]: value }));
   };
 
+  const addOrUpdateTier = () => {
+    const minPrice = parseFloat(tierForm.min_price);
+    const maxPrice = tierForm.max_price ? parseFloat(tierForm.max_price) : null;
+    const charge = parseFloat(tierForm.delivery_charge);
+
+    if (isNaN(minPrice) || isNaN(charge) || (tierForm.max_price && isNaN(maxPrice))) {
+      showPopup("Please enter valid numbers", "error");
+      return;
+    }
+
+    if (maxPrice !== null && maxPrice < minPrice) {
+      showPopup("Max price must be greater than min price", "error");
+      return;
+    }
+
+    const newTier = { min_price: minPrice, max_price: maxPrice, delivery_charge: charge };
+    const updatedTiers = [...(settings.delivery_charge_tiers || [])];
+
+    if (editingTierIndex !== null) {
+      updatedTiers[editingTierIndex] = newTier;
+      setEditingTierIndex(null);
+      showPopup("Tier updated successfully!");
+    } else {
+      updatedTiers.push(newTier);
+      showPopup("Tier added successfully!");
+    }
+
+    // Sort by min_price
+    updatedTiers.sort((a, b) => a.min_price - b.min_price);
+    setSettings(prev => ({ ...prev, delivery_charge_tiers: updatedTiers }));
+    setTierForm({ min_price: "", max_price: "", delivery_charge: "" });
+  };
+
+  const editTier = (index) => {
+    const tier = settings.delivery_charge_tiers[index];
+    setTierForm({
+      min_price: tier.min_price.toString(),
+      max_price: tier.max_price ? tier.max_price.toString() : "",
+      delivery_charge: tier.delivery_charge.toString(),
+    });
+    setEditingTierIndex(index);
+  };
+
+  const deleteTier = (index) => {
+    const updatedTiers = settings.delivery_charge_tiers.filter((_, i) => i !== index);
+    setSettings(prev => ({ ...prev, delivery_charge_tiers: updatedTiers }));
+    setEditingTierIndex(null);
+    setTierForm({ min_price: "", max_price: "", delivery_charge: "" });
+    showPopup("Tier deleted successfully!");
+  };
+
   const tabs = [
     { id: "store", icon: "bx-store", label: "Store Info" },
     { id: "orders", icon: "bx-cart", label: "Order Limits" },
@@ -123,14 +180,7 @@ function AdminSettings() {
   ];
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: "center", padding: "40px" }}>Loading settings...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading settings..." />;
   }
 
   return (
@@ -272,28 +322,82 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-car'></i>
                   <div>
-                    <h2>Delivery Charges</h2>
-                    <p>Set delivery charges based on number of items</p>
+                    <h2>Delivery Charges by Order Amount</h2>
+                    <p>Set delivery charges based on order value</p>
                   </div>
                 </div>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label>Single Item Order (₹)</label>
-                    <input type="number" min="0" step="0.01"
-                      value={settings.delivery_charge_single}
-                      onChange={e => updateField("delivery_charge_single", e.target.value)}
-                      placeholder="10.00" />
-                    <span className="form-hint">Charge when cart has 1 item</span>
-                  </div>
-                  <div className="form-group">
-                    <label>Multiple Items Order (₹)</label>
-                    <input type="number" min="0" step="0.01"
-                      value={settings.delivery_charge_multiple}
-                      onChange={e => updateField("delivery_charge_multiple", e.target.value)}
-                      placeholder="15.00" />
-                    <span className="form-hint">Charge when cart has 2+ items</span>
+
+                {/* Add/Edit Tier Form */}
+                <div className="tier-form-section">
+                  <h3>{editingTierIndex !== null ? "Edit Tier" : "Add New Tier"}</h3>
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label>Min Price (₹)</label>
+                      <input type="number" min="0" step="0.01"
+                        value={tierForm.min_price}
+                        onChange={e => setTierForm({...tierForm, min_price: e.target.value})}
+                        placeholder="0" />
+                    </div>
+                    <div className="form-group">
+                      <label>Max Price (₹)</label>
+                      <input type="number" min="0" step="0.01"
+                        value={tierForm.max_price}
+                        onChange={e => setTierForm({...tierForm, max_price: e.target.value})}
+                        placeholder="Leave empty for unlimited" />
+                    </div>
+                    <div className="form-group">
+                      <label>Delivery Charge (₹)</label>
+                      <input type="number" min="0" step="0.01"
+                        value={tierForm.delivery_charge}
+                        onChange={e => setTierForm({...tierForm, delivery_charge: e.target.value})}
+                        placeholder="0" />
+                    </div>
+                    <div className="form-group">
+                      <button className="btn-primary" onClick={addOrUpdateTier}>
+                        {editingTierIndex !== null ? "Update Tier" : "Add Tier"}
+                      </button>
+                    </div>
                   </div>
                 </div>
+
+                {/* Existing Tiers Table */}
+                {settings.delivery_charge_tiers && settings.delivery_charge_tiers.length > 0 ? (
+                  <div className="tier-table-section">
+                    <h3>Delivery Charge Tiers</h3>
+                    <table className="tier-table">
+                      <thead>
+                        <tr>
+                          <th>Min Price</th>
+                          <th>Max Price</th>
+                          <th>Delivery Charge</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {settings.delivery_charge_tiers.map((tier, index) => (
+                          <tr key={index}>
+                            <td>₹{tier.min_price.toFixed(2)}</td>
+                            <td>{tier.max_price ? `₹${tier.max_price.toFixed(2)}` : "∞"}</td>
+                            <td>{tier.delivery_charge === 0 ? "FREE" : `₹${tier.delivery_charge.toFixed(2)}`}</td>
+                            <td className="action-buttons">
+                              <button className="btn-edit" onClick={() => editTier(index)}>
+                                <i className='bx bx-edit'></i> Edit
+                              </button>
+                              <button className="btn-delete" onClick={() => deleteTier(index)}>
+                                <i className='bx bx-trash'></i> Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <i className='bx bx-inbox'></i>
+                    <p>No delivery charge tiers configured yet. Add one to get started.</p>
+                  </div>
+                )}
               </div>
             )}
 
