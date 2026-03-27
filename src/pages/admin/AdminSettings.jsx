@@ -354,7 +354,7 @@ function AdminSettings() {
                     </div>
                     <div className="form-group">
                       <button className="btn-primary" onClick={addOrUpdateTier}>
-                        {editingTierIndex !== null ? "Update Tier" : "Add Tier"}
+                        {editingTierIndex !== null ? "Update" : "Add"}
                       </button>
                     </div>
                   </div>
@@ -363,7 +363,7 @@ function AdminSettings() {
                 {/* Existing Tiers Table */}
                 {settings.delivery_charge_tiers && settings.delivery_charge_tiers.length > 0 ? (
                   <div className="tier-table-section">
-                    <h3>Delivery Charge Tiers</h3>
+                    <h3>Delivery Charge</h3>
                     <table className="tier-table">
                       <thead>
                         <tr>

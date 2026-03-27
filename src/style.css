@@ -1693,6 +1693,7 @@ textarea{
   background:transparent;
   cursor:pointer;
   font-weight:500;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-toggle button.active {
