@@ -35,8 +35,8 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const loginWithOTP = async (phone, code) => {
-    const data = await authService.verifyOTP(phone, code);
+  const loginWithOTP = async (identifier, code) => {
+    const data = await authService.verifyOTP(identifier, code);
     await loadUser();
     return data;
   };

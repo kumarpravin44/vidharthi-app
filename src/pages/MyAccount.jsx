@@ -3,13 +3,16 @@ import { useNavigate, Link } from "react-router-dom";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useAuth } from "../context/AuthContext";
+import { useNavigation } from "../context/NavigationContext";
 import { clearCache, clearAllCaches, CACHE_KEYS } from '../utils/cacheutils';
 import { productService } from '../services/productService';
+import { getAvatarUrl } from '../utils/placeholderImage';
 import "boxicons/css/boxicons.min.css";
 
 function MyAccount() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { refreshNavCategories } = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -29,15 +32,11 @@ function MyAccount() {
     if (confirm("Refresh app data? This will reload categories and other cached data.")) {
       setRefreshing(true);
       try {
-        // Clear all caches
-        clearAllCaches();
-        
         // Force refresh categories from backend
-        await productService.getNavCategories(true);
+        await refreshNavCategories();
         await productService.getCategoriesTree(true);
         
         alert("App data refreshed successfully!");
-        // window.location.reload();
       } catch (error) {
         console.error('Failed to refresh cache:', error);
         alert("Failed to refresh data. Please try again.");
@@ -70,7 +69,7 @@ function MyAccount() {
             <div className="profile-left">
               <div className="profile-avatar">
                 {user.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.full_name} />
+                  <img src={getAvatarUrl(user.avatar_url)} alt={user.full_name} />
                 ) : (
                   <i className='bx bx-user'></i>
                 )}

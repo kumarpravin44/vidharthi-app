@@ -168,18 +168,6 @@ function ProductDetail() {
               <span className="old-price">₹ {product.mrp}</span>
             )}
           </p>
-         
-          {product.description && (
-            <p className="product-description">
-              {product.description}
-            </p>
-          )}
-
-          {product.stock !== undefined && (
-            <p className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-              {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
-            </p>
-          )}
 
           {product.stock > 0 && (
             <div className="qty-controls detail-qty">
@@ -188,6 +176,22 @@ function ProductDetail() {
               <button onClick={increaseQty}>+</button>
             </div>
           )}
+
+          {product.stock !== undefined && (
+            <p className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+              {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+            </p>
+          )}
+         
+          {product.description && (
+            <p className="product-description">
+              {product.description}
+            </p>
+          )}
+
+          
+
+          
 
         </div>
 

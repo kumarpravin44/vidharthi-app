@@ -4,6 +4,8 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useLoader } from "../context/LoaderContext";
 import { useAuth } from "../context/AuthContext";
+import { authService } from "../services/authService";
+import { getAvatarUrl } from "../utils/placeholderImage";
 import "boxicons/css/boxicons.min.css";
 
 function EditProfile() {
@@ -17,6 +19,7 @@ function EditProfile() {
   });
 
   const [profileImage, setProfileImage] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
 
@@ -31,7 +34,7 @@ function EditProfile() {
         email: user.email || "",
       });
       if (user.avatar_url) {
-        setProfileImage(user.avatar_url);
+        setProfileImage(getAvatarUrl(user.avatar_url));
       }
     }
   }, [user, isAuthenticated, navigate]);
@@ -45,8 +48,8 @@ function EditProfile() {
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
+      setAvatarFile(e.target.files[0]);
       setProfileImage(URL.createObjectURL(e.target.files[0]));
-    // TODO: In production, upload image to server and get URL
     }
   };
 
@@ -59,6 +62,12 @@ function EditProfile() {
     setLoading(true);
 
     try {
+      // Upload avatar if a new file was selected
+      if (avatarFile) {
+        await authService.uploadAvatar(avatarFile);
+        setAvatarFile(null);
+      }
+
       const updateData = {};
       if (formData.full_name !== user.full_name) {
         updateData.full_name = formData.full_name;
@@ -69,11 +78,12 @@ function EditProfile() {
 
       if (Object.keys(updateData).length > 0) {
         await updateProfile(updateData);
-        await refreshUser();
-        showPopup("Profile Updated Successfully ✅", "success");
-      } else {
-        showPopup("No changes made", "error");
       }
+
+      await refreshUser();
+      // Clear local blob preview and let the user data populate the real URL
+      setProfileImage(null);
+      showPopup("Profile Updated Successfully ✅", "success");
     } catch (error) {
       showPopup(error.message || "Failed to update profile", "error");
     } finally {

@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
     REFRESH: '/auth/refresh',
     ME: '/auth/me',
     UPDATE_PROFILE: '/auth/me',
+    UPLOAD_AVATAR: '/auth/me/avatar',
     CHANGE_PASSWORD: '/auth/me/change-password',
     SEND_OTP: '/auth/otp/send',
     VERIFY_OTP: '/auth/otp/verify',

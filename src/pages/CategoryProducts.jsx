@@ -25,31 +25,67 @@ function CategoryProducts() {
   const [popupType, setPopupType] = useState("success");
   const [sortBy, setSortBy] = useState("");
   const [filterBy, setFilterBy] = useState("");
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
   useEffect(() => {
+    // Reset subcategory filter when category changes
+    setSelectedSubcategory("");
+    setFilterBy("");
     loadCategoryData();
-  }, [id, sortBy]); // Reload when category or sort changes
+  }, [id]); // Reload only when category changes
+
+  useEffect(() => {
+    // Reload products when sort changes
+    if (subcategories.length > 0) {
+      loadProductsFromSubcategories(subcategories);
+    } else if (products.length > 0 && sortBy === "popular") {
+      // Reload for popular sort when there are no subcategories
+      loadCategoryData();
+    }
+  }, [sortBy]); // Reload when sort changes
 
   const loadCategoryData = async () => {
     setLoading(true);
+    // Don't reset selectedSubcategory here - only reset in the id useEffect
     try {
-      // Load category details
-      const categoryData = await productService.getCategory(id);
-      setCategory(categoryData);
-
-      // Load products for this category
-      // If sorting by popular, fetch from backend with sort parameter
-      const params = { category_id: id };
-      if (sortBy === 'popular') {
-        params.sort_by = 'popular';
+      const res = await productService.getCategoryDetails(id);
+      if (res.type === "subcategories") {
+        setSubcategories(res.data);
+        // Fetch all products from all subcategories
+        await loadProductsFromSubcategories(res.data);
+      } else {
+        setProducts(res.data);
+        setSubcategories([]);
       }
-      const productsData = await productService.getProducts(params);
-      setProducts(productsData);
     } catch (error) {
-      console.error('Failed to load category products:', error);
-      showPopup("Failed to load products", "error");
+      console.error("Error loading category data:", error);
+      setProducts([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProductsFromSubcategories = async (subcats) => {
+    try {
+      // Fetch products from all subcategories in parallel
+      const productPromises = subcats.map(subcat => 
+        productService.getProducts({ 
+          category_id: subcat.id, 
+          limit: 100,
+          sort_by: sortBy === "popular" ? "popular" : null
+        })
+      );
+      
+      const productsArrays = await Promise.all(productPromises);
+      
+      // Flatten all products into a single array
+      const allProducts = productsArrays.flat();
+      
+      setProducts(allProducts);
+    } catch (error) {
+      console.error("Error loading products from subcategories:", error);
+      setProducts([]);
     }
   };
 
@@ -57,7 +93,12 @@ function CategoryProducts() {
   const filteredProducts = useMemo(() => {
     let updatedProducts = [...products];
 
-    // Filter
+    // Filter by subcategory if selected
+    if (selectedSubcategory) {
+      updatedProducts = updatedProducts.filter(p => p.category.id === selectedSubcategory);
+    }
+
+    // Filter by price
     if (filterBy === "under50") {
       updatedProducts = updatedProducts.filter(p => p.price <= 50);
     }
@@ -75,7 +116,7 @@ function CategoryProducts() {
     // Popular sort is already handled by backend query
 
     return updatedProducts;
-  }, [products, sortBy, filterBy]);
+  }, [products, sortBy, filterBy, selectedSubcategory]);
 
   const showPopup = (message, type = "success") => {
     setPopupType(type);
@@ -140,6 +181,20 @@ function CategoryProducts() {
       <div className="category-products-page content">
         {/* Filter + Sort Bar */}
         <div className="filter-sort-bar">
+          {subcategories.length > 0 && (
+            <select 
+              value={selectedSubcategory} 
+              onChange={(e) => setSelectedSubcategory(e.target.value)}
+            >
+              <option value="">All Subcategories</option>
+              {subcategories.map(subcat => (
+                <option key={subcat.id} value={subcat.id}>
+                  {subcat.name}
+                </option>
+              ))}
+            </select>
+          )}
+
           <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)}>
             <option value="">Filter</option>
             <option value="under50">Under ₹50</option>

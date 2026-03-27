@@ -4,6 +4,7 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useAppSettings } from "../context/AppSettingsContext";
 import { orderService } from "../services/orderService";
 import { addressService } from "../services/addressService";
 import { useLoader } from "../context/LoaderContext";
@@ -13,6 +14,7 @@ function Checkout() {
   const navigate = useNavigate();
   const { cart, totalAmount, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const { settings: appSettings } = useAppSettings();
   const { setLoading } = useLoader();
 
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -37,7 +39,30 @@ function Checkout() {
   });
   const [savingAddress, setSavingAddress] = useState(false);
 
-  const deliveryCharge = 30;
+  // Calculate delivery charge using tiers (matching backend logic)
+  const calculateDeliveryCharge = () => {
+    if (!cart || !cart.items) return 0;
+    
+    const tiers = appSettings.delivery_charge_tiers;
+    if (tiers && Array.isArray(tiers) && tiers.length > 0) {
+      // Find the first tier where totalAmount is within min/max
+      for (const tier of tiers) {
+        const minPrice = tier.min_price || 0;
+        const maxPrice = tier.max_price;
+        if (totalAmount >= minPrice && (maxPrice === null || maxPrice === undefined || totalAmount <= maxPrice)) {
+          return tier.delivery_charge || 0;
+        }
+      }
+      return 0; // No matching tier, free delivery
+    } else {
+      // Fallback to old logic if tiers not configured
+      return cart.items.length === 1
+        ? appSettings.delivery_charge_single
+        : appSettings.delivery_charge_multiple;
+    }
+  };
+  
+  const deliveryCharge = calculateDeliveryCharge();
   const total = totalAmount + deliveryCharge;
 
   useEffect(() => {
@@ -136,6 +161,10 @@ function Checkout() {
       };
 
       const order = await orderService.createOrder(orderData);
+      
+      // Clear cart from frontend state (backend already cleared it)
+      await clearCart();
+      
       setLoading(false);
       showPopup("Order placed successfully! 🎉", "success");
       
@@ -165,6 +194,19 @@ function Checkout() {
       <InternalHeader title="Checkout" />
       <div className="content">
         <div className="checkout-page">
+
+          {/* Maintenance Mode Banner */}
+          {appSettings.maintenance_mode && (
+            <div style={{
+              background: '#fff3e0', border: '1px solid #ff9800', borderRadius: '8px',
+              padding: '14px 18px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px'
+            }}>
+              <i className='bx bx-error-circle' style={{ fontSize: '22px', color: '#e65100' }}></i>
+              <span style={{ color: '#e65100', fontSize: '14px', fontWeight: 500 }}>
+                {appSettings.maintenance_message || "We are currently under maintenance. Please try again later."}
+              </span>
+            </div>
+          )}
 
           {/* Address Section */}
           <div className="checkout-card">
@@ -271,7 +313,6 @@ function Checkout() {
                       value={newAddress.pincode}
                       onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
                       className="checkout-input"
-                      style={{ maxWidth: '180px' }}
                     />
                     <button
                       className="save-address-btn"
@@ -352,7 +393,7 @@ function Checkout() {
               </label>
             </div>
 
-            <div className="payment-option">
+            {/* <div className="payment-option">
               <label>
                 <input
                   type="radio"
@@ -362,7 +403,7 @@ function Checkout() {
                 />
                 Online Payment
               </label>
-            </div>
+            </div> */}
           </div>
 
         </div>
@@ -370,8 +411,13 @@ function Checkout() {
 
       {/* Sticky Bottom */}
       <div className="place-order-bar">
-        <button className="place-order-btn" onClick={handlePlaceOrder}>
-          Place Order ₹ {total.toFixed(2)}
+        <button
+          className="place-order-btn"
+          onClick={handlePlaceOrder}
+          disabled={appSettings.maintenance_mode}
+          style={appSettings.maintenance_mode ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+        >
+          {appSettings.maintenance_mode ? "Store Under Maintenance" : `Place Order ₹ ${total.toFixed(2)}`}
         </button>
       </div>
 

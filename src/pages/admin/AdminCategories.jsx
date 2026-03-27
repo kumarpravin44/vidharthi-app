@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
+import Loader from "../../components/Loader";
 import "boxicons/css/boxicons.min.css";
 
 function AdminCategories() {
@@ -42,11 +43,6 @@ function AdminCategories() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const showPopup = (message) => {
-    setPopupMessage(message);
-    setTimeout(() => setPopupMessage(""), 2500);
   };
 
   // Top-level categories only (for parent dropdown)
@@ -147,14 +143,7 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: "center", padding: "40px" }}>Loading...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading categories..." />;
   }
 
   // Separate parent categories and their children

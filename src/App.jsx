@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -31,6 +32,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminBanners from "./pages/admin/AdminBanners";
 import AdminOffers from "./pages/admin/AdminOffers";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/account" element={<MyAccount />} />
@@ -50,6 +53,7 @@ function App() {
         <Route path="/add-address" element={<AddAddress />} />
         <Route path="/category/:id" element={<CategoryProducts />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/product/:id/details" element={<ProductDetail />} />
         <Route path="/all-categories" element={<AllCategories />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
@@ -68,6 +72,7 @@ function App() {
         <Route path="/admin/categories" element={<AdminCategories />} />
         <Route path="/admin/banners" element={<AdminBanners />} />
         <Route path="/admin/offers" element={<AdminOffers />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
       </Routes>
     </BrowserRouter>
   );

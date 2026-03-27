@@ -82,4 +82,8 @@ export const productService = {
     return data;
   },
 
+  getCategoryDetails: async (id) => {
+    return await fetchAPI(`/categories/${id}/details`);
+  },
+
 };

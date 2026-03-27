@@ -4,6 +4,7 @@ import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import "boxicons/css/boxicons.min.css";
+import Loader from "../../components/Loader";
 
 import saltImg from "../../images/product/salt.webp";
 
@@ -210,14 +211,7 @@ function AdminProducts() {
   }, [products, filterCategory, filterStock, sortConfig]);
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading products..." />;
   }
 
   return (

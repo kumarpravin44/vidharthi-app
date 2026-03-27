@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
 import "boxicons/css/boxicons.min.css";
+import Loader from "../../components/Loader";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -26,36 +27,24 @@ function AdminDashboard() {
       console.error('Failed to load stats:', error);
       setLoading(false);
       
-      // If unauthorized, redirect to login
-      if (error.message.includes('401') || error.message.includes('403')) {
-        adminService.logout();
-        navigate("/admin/login");
-      } else {
-        // Show error state with zeros
-        setStats({
-          total_users: 0,
-          total_products: 0,
-          total_orders: 0,
-          total_revenue: 0,
-          pending_orders: 0,
-          delivered_orders: 0,
-          cancelled_orders: 0,
-          active_users: 0,
-        });
-        alert('Failed to load dashboard stats. Please try refreshing the page.');
-      }
+      // Show error state with zeros
+      setStats({
+        total_users: 0,
+        total_products: 0,
+        out_of_stock_products: 0,
+        total_orders: 0,
+        total_revenue: 0,
+        pending_orders: 0,
+        delivered_orders: 0,
+        cancelled_orders: 0,
+        active_users: 0,
+      });
+      alert('Failed to load dashboard stats. Please try refreshing the page.');
     }
   };
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading dashboard..." />;
   }
 
   return (
@@ -85,6 +74,16 @@ function AdminDashboard() {
             <div className="stat-info">
               <h3>{stats.total_products || 0}</h3>
               <p>Total Products</p>
+            </div>
+          </div>
+
+          <div className="stat-card red">
+            <div className="stat-icon">
+              <i className='bx bx-block'></i>
+            </div>
+            <div className="stat-info">
+              <h3>{stats.out_of_stock_products || 0}</h3>
+              <p>Out of Stock</p>
             </div>
           </div>
 

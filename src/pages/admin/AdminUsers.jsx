@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
+import Loader from "../../components/Loader";
 import "boxicons/css/boxicons.min.css";
 
 function AdminUsers() {
@@ -62,14 +63,7 @@ function AdminUsers() {
   };
 
   if (loading) {
-    return (
-      <>
-        <AdminHeader />
-        <div className="admin-content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading...</p>
-        </div>
-      </>
-    );
+    return <Loader text="Loading users..." />;
   }
 
   return (
@@ -126,12 +120,13 @@ function AdminUsers() {
                       </span>
                     </td>
                     <td>
+                      {!user.is_admin &&
                       <button
                         className={`toggle-btn ${user.is_active ? 'deactivate' : 'activate'}`}
                         onClick={() => handleToggleStatus(user.id, user.is_active)}
                       >
                         {user.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))
