@@ -4,7 +4,6 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useAuth } from "../context/AuthContext";
 import { useNavigation } from "../context/NavigationContext";
-import { clearCache, clearAllCaches, CACHE_KEYS } from '../utils/cacheutils';
 import { productService } from '../services/productService';
 import { getAvatarUrl } from '../utils/placeholderImage';
 import "boxicons/css/boxicons.min.css";
@@ -13,7 +12,14 @@ function MyAccount() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { refreshNavCategories } = useNavigation();
+
   const [refreshing, setRefreshing] = useState(false);
+
+  // ✅ Popup states (same as SlideMenu)
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmType, setConfirmType] = useState(""); // logout / refresh
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,29 +27,51 @@ function MyAccount() {
     }
   }, [isAuthenticated, navigate]);
 
+  // 🔴 Logout Click
   const handleLogout = () => {
-    if (confirm("Are you sure you want to logout?")) {
-      logout();
-      navigate("/login");
-    }
+    setConfirmType("logout");
+    setShowConfirm(true);
   };
 
-  const handleRefreshCache = async () => {
-    if (confirm("Refresh app data? This will reload categories and other cached data.")) {
+  // 🔄 Refresh Click
+  const handleRefreshCache = () => {
+    setConfirmType("refresh");
+    setShowConfirm(true);
+  };
+
+  // ✅ Confirm Action
+  const handleConfirm = async () => {
+    setShowConfirm(false);
+
+    if (confirmType === "logout") {
+      logout();
+      setPopupMessage("Logged out successfully");
+      setPopupType("success");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    }
+
+    if (confirmType === "refresh") {
       setRefreshing(true);
       try {
-        // Force refresh categories from backend
         await refreshNavCategories();
         await productService.getCategoriesTree(true);
-        
-        alert("App data refreshed successfully!");
+
+        setPopupMessage("App data refreshed successfully");
+        setPopupType("success");
       } catch (error) {
-        console.error('Failed to refresh cache:', error);
-        alert("Failed to refresh data. Please try again.");
+        setPopupMessage("Failed to refresh data");
+        setPopupType("error");
       } finally {
         setRefreshing(false);
       }
     }
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
   };
 
   if (!user) {
@@ -61,6 +89,7 @@ function MyAccount() {
   return (
     <>
       <InternalHeader title="My Account" />
+
       <div className="content">
         <div className="account-page">
 
@@ -118,9 +147,9 @@ function MyAccount() {
 
           {/* Settings */}
           <div className="account-card">
-            <div 
-              className="account-item" 
-              onClick={handleRefreshCache} 
+            <div
+              className="account-item"
+              onClick={handleRefreshCache}
               style={{ cursor: 'pointer' }}
             >
               <i className={`bx ${refreshing ? 'bx-loader bx-spin' : 'bx-refresh'}`}></i>
@@ -130,7 +159,11 @@ function MyAccount() {
 
           {/* Logout */}
           <div className="account-card">
-            <div className="account-item logout" onClick={handleLogout} style={{ cursor: 'pointer' }}>
+            <div
+              className="account-item logout"
+              onClick={handleLogout}
+              style={{ cursor: 'pointer' }}
+            >
               <i className='bx bx-log-out'></i>
               <span>Logout</span>
             </div>
@@ -140,6 +173,55 @@ function MyAccount() {
       </div>
 
       <BottomNav />
+
+      {/* 🔥 Confirm Popup */}
+      {showConfirm && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <i
+              className={`bx ${
+                confirmType === "logout" ? "bx-log-out" : "bx-refresh"
+              }`}
+              style={{ fontSize: "35px", color: "#ff4d4f" }}
+            ></i>
+
+            <h3>
+              {confirmType === "logout"
+                ? "Logout?"
+                : "Refresh App Data?"}
+            </h3>
+
+            <p style={{ fontSize: "13px", color: "#777" }}>
+              {confirmType === "logout"
+                ? "Are you sure you want to logout"
+                : "This will reload categories and cached data"}
+            </p>
+
+            <div style={{ marginTop: "15px"}}>
+              <button onClick={handleCancel}>Cancel</button>
+              <button style={{ marginLeft: "10px" }} onClick={handleConfirm}>
+                {confirmType === "logout" ? "Logout" : "Refresh"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Success / Error Popup */}
+      {popupMessage && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <i
+              className={`bx ${
+                popupType === "success"
+                  ? "bx-check-circle success-icon"
+                  : "bx-error error-icon"
+              }`}
+            ></i>
+            <h3>{popupMessage}</h3>
+          </div>
+        </div>
+      )}
     </>
   );
 }
