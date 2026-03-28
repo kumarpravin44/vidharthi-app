@@ -143,9 +143,13 @@ function SlideMenu({ open, setOpen }) {
       {showConfirm && (
         <div className="popup-overlay">
           <div className="popup-box">
+            <i
+              className={'bx bx-log-out'}
+              style={{ fontSize: "35px", color: "#ff4d4f" }}
+            ></i>
             <h3>Are you sure you want to logout?</h3>
             <div style={{ marginTop: "15px" }}>
-              <button style={{ backgroundColor: "#4CAF50" }} onClick={confirmLogout}>Yes</button>
+              <button onClick={confirmLogout}>Yes</button>
               <button
                 onClick={cancelLogout}
                 style={{ marginLeft: "10px" }}

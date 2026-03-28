@@ -1,5 +1,5 @@
 
-function Loader({ text = "Loading..." }) {
+function Loader({ text = "Please Wait..." }) {
   return (
     <div className="global-loader">
       <div className="loader-card">
