@@ -5129,3 +5129,24 @@ select, input {
 .filter-sort-bar select {
     width: 33.33%;
 }
+
+.lang-float {
+    position: fixed;
+    bottom: 80px;
+    right: 15px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 50px;
+    background: #3a3a3a;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.lang-float i {
+  font-size: 18px;
+}

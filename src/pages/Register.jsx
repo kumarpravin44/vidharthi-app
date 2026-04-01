@@ -5,6 +5,7 @@ import BottomNav from "../components/BottomNav";
 import { useLoader } from "../context/LoaderContext";
 import { useAuth } from "../context/AuthContext";
 import InternalHeader from "../components/InternalHeader";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 
 function Register() {
   const [fullName, setFullName] = useState("");
@@ -17,11 +18,10 @@ function Register() {
   const navigate = useNavigate();
   const { setLoading } = useLoader();
   const { register, isAuthenticated } = useAuth();
+  const { t } = useTranslation(); // 👈 ADD
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
+    if (isAuthenticated) navigate("/");
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
@@ -33,15 +33,15 @@ function Register() {
 
   const validate = () => {
     if (!fullName.trim() || fullName.trim().length < 2) {
-      setError("Enter your full name (at least 2 characters)");
+      setError(t("invalid_name"));
       return false;
     }
     if (!/^[6-9]\d{9}$/.test(phone)) {
-      setError("Enter valid 10 digit mobile number");
+      setError(t("invalid_phone"));
       return false;
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Enter a valid email address");
+      setError(t("invalid_email"));
       return false;
     }
     return true;
@@ -61,34 +61,33 @@ function Register() {
       });
       setLoading(false);
       setPopupType("success");
-      setPopupMessage("Registration Successful!");
+      setPopupMessage(t("register_success"));
       setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       setLoading(false);
       setPopupType("error");
-      setPopupMessage(err.message || "Registration failed");
+      setPopupMessage(err.message || t("register_failed"));
     }
   };
 
   return (
     <>
-      <InternalHeader title="Register" />
+      <InternalHeader title={t("register")} />
 
       <div className="content">
         <div className="login-container">
           <div className="login-card">
+
             <div className="login-top-icon">
-  <i className="bx bx-user-plus"></i>
-  <h2>Create Account</h2>
-  
-</div>
-           
+              <i className="bx bx-user-plus"></i>
+              <h2>{t("create_account")}</h2>
+            </div>
 
             <div className="input-box">
               <i className="bx bx-user"></i>
               <input
                 type="text"
-                placeholder="Full Name *"
+                placeholder={t("full_name")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
@@ -98,7 +97,7 @@ function Register() {
               <i className="bx bx-phone"></i>
               <input
                 type="tel"
-                placeholder="Mobile Number *"
+                placeholder={t("mobile_number")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
@@ -108,7 +107,7 @@ function Register() {
               <i className="bx bx-envelope"></i>
               <input
                 type="email"
-                placeholder="Email Address *"
+                placeholder={t("email_address")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -117,18 +116,17 @@ function Register() {
             {error && <p className="error-text">{error}</p>}
 
             <button className="primary-btn" onClick={handleRegister}>
-              Register
+              {t("register")}
             </button>
 
             <p className="register-link" style={{ textAlign: "center", marginTop: "15px" }}>
-              Already have an account?{" "}
-              <span
-                onClick={() => navigate("/login")}
-                style={{ color: "#4CAF50", cursor: "pointer", fontWeight: 600 }}
-              >
-                Login here
+              {t("already_account")}{" "}
+              <span  onClick={() => navigate("/login")} style={{ color: "rgb(76, 175, 80)", cursor: "pointer", fontWeight: "600" }}>
+                    
+                {t("login_here")}
               </span>
             </p>
+
           </div>
         </div>
       </div>
@@ -144,9 +142,6 @@ function Register() {
               }`}
             ></i>
             <h3>{popupMessage}</h3>
-            {popupType === "error" && (
-              <button onClick={() => setPopupMessage("")}>OK</button>
-            )}
           </div>
         </div>
       )}

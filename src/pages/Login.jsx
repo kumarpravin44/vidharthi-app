@@ -6,6 +6,7 @@ import { useLoader } from "../context/LoaderContext";
 import { useAuth } from "../context/AuthContext";
 import InternalHeader from "../components/InternalHeader";
 import { authService } from "../services/authService";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 
 function Login() {
   const [loginType, setLoginType] = useState("phone");
@@ -21,26 +22,20 @@ function Login() {
   const navigate = useNavigate();
   const { setLoading } = useLoader();
   const { loginWithOTP, isAuthenticated } = useAuth();
+  const { t } = useTranslation(); // 👈 ADD
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
+    if (isAuthenticated) navigate("/");
   }, [isAuthenticated, navigate]);
 
-  // Timer
   useEffect(() => {
     let interval;
     if (showOtp && timer > 0) {
-      interval = setInterval(() => {
-        setTimer(prev => prev - 1);
-      }, 1000);
+      interval = setInterval(() => setTimer(prev => prev - 1), 1000);
     }
     return () => clearInterval(interval);
   }, [showOtp, timer]);
 
-  // Auto-close popup
   useEffect(() => {
     if (popupMessage && popupType === "success") {
       const timeout = setTimeout(() => setPopupMessage(""), 2000);
@@ -48,24 +43,20 @@ function Login() {
     }
   }, [popupMessage, popupType]);
 
-  // Validate Input
   const validateInput = () => {
     if (loginType === "phone") {
-      const mobileRegex = /^[6-9]\d{9}$/;
-      return mobileRegex.test(inputValue);
+      return /^[6-9]\d{9}$/.test(inputValue);
     } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(inputValue);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputValue);
     }
   };
 
-  // Send OTP
   const handleSendOtp = async () => {
     if (!validateInput()) {
       setError(
         loginType === "phone"
-          ? "Enter valid 10 digit mobile number"
-          : "Enter valid email address"
+          ? t("invalid_phone")
+          : t("invalid_email")
       );
       return;
     }
@@ -77,17 +68,16 @@ function Login() {
       await authService.sendOTP(inputValue);
       setLoading(false);
       setPopupType("success");
-      setPopupMessage("OTP Sent Successfully");
+      setPopupMessage(t("otp_sent"));
       setShowOtp(true);
       setTimer(30);
     } catch (err) {
       setLoading(false);
       setPopupType("error");
-      setPopupMessage(err.message || "Failed to send OTP");
+      setPopupMessage(err.message || t("otp_failed"));
     }
   };
 
-  // Resend OTP
   const handleResendOtp = async () => {
     setLoading(true);
     try {
@@ -95,40 +85,20 @@ function Login() {
       setLoading(false);
       setTimer(30);
       setPopupType("success");
-      setPopupMessage("OTP Resent Successfully");
+      setPopupMessage(t("otp_resent"));
     } catch (err) {
       setLoading(false);
       setPopupType("error");
-      setPopupMessage(err.message || "Failed to resend OTP");
+      setPopupMessage(err.message || t("otp_resend_failed"));
     }
   };
 
-  // OTP change
-  const handleOtpChange = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value && index < 5) {
-      otpRefs.current[index + 1].focus();
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpRefs.current[index - 1].focus();
-    }
-  };
-
-  // Verify OTP
   const handleVerifyOtp = async () => {
     const finalOtp = otp.join("");
 
     if (finalOtp.length !== 6) {
       setPopupType("error");
-      setPopupMessage("Please enter complete OTP");
+      setPopupMessage(t("enter_full_otp"));
       return;
     }
 
@@ -138,47 +108,42 @@ function Login() {
       await loginWithOTP(inputValue, finalOtp);
       setLoading(false);
       setPopupType("success");
-      setPopupMessage("Login Successful!");
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
+      setPopupMessage(t("login_success"));
+      setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       setLoading(false);
       setPopupType("error");
-      setPopupMessage(err.message || "Invalid OTP");
+      setPopupMessage(err.message || t("invalid_otp"));
     }
   };
 
   return (
     <>
-      <InternalHeader title="Login" />
-      
+      <InternalHeader title={t("login")} />
 
       <div className="content">
-        
-        
-          <div className="login-card">
-            <div className="login-container">
-          <div className="login-top-icon">
-  <i className="bx bx-lock-alt"></i>
-  <h2>Welcome Back</h2>
-  <p>Login to continue</p>
-</div>
+        <div className="login-card">
+          <div className="login-container">
 
-            {/* Toggle - Phone / Email */}
+            <div className="login-top-icon">
+              <i className="bx bx-lock-alt"></i>
+              <h2>{t("welcome_back")}</h2>
+              <p>{t("login_continue")}</p>
+            </div>
+
             {!showOtp && (
               <div className="login-toggle">
                 <button
                   className={loginType === "phone" ? "active" : ""}
                   onClick={() => { setLoginType("phone"); setInputValue(""); setError(""); }}
                 >
-                  Phone
+                  {t("phone")}
                 </button>
                 <button
                   className={loginType === "email" ? "active" : ""}
                   onClick={() => { setLoginType("email"); setInputValue(""); setError(""); }}
                 >
-                  Email
+                  {t("email")}
                 </button>
               </div>
             )}
@@ -191,8 +156,8 @@ function Login() {
                     type={loginType === "phone" ? "tel" : "email"}
                     placeholder={
                       loginType === "phone"
-                        ? "Enter Mobile Number"
-                        : "Enter Email Address"
+                        ? t("enter_phone")
+                        : t("enter_email")
                     }
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
@@ -202,13 +167,13 @@ function Login() {
                 {error && <p className="error-text">{error}</p>}
 
                 <button className="primary-btn" onClick={handleSendOtp}>
-                  Send OTP
+                  {t("send_otp")}
                 </button>
 
                 <p className="register-link">
-                  New user?{" "}
-                  <span onClick={() => navigate("/register")} style={{ color: "#4CAF50", cursor: "pointer", fontWeight: 600 }}>
-                    Register here
+                  {t("new_user")}{" "}
+                  <span onClick={() => navigate("/register")} style={{ color: "rgb(76, 175, 80)", cursor: "pointer", fontWeight: "600" }}>
+                    {t("register_here")}
                   </span>
                 </p>
               </>
@@ -216,7 +181,9 @@ function Login() {
 
             {showOtp && (
               <div className="otp-section">
-                <p>Enter 6-digit OTP sent to {loginType === "email" ? "your email " : ""}{inputValue}</p>
+                <p>
+                  {t("enter_otp")} {inputValue}
+                </p>
 
                 <div className="otp-inputs">
                   {[0,1,2,3,4,5].map((_, index) => (
@@ -226,22 +193,28 @@ function Login() {
                       maxLength="1"
                       value={otp[index]}
                       ref={(el) => (otpRefs.current[index] = el)}
-                      onChange={(e) => handleOtpChange(e.target.value, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (!/^[0-9]?$/.test(val)) return;
+                        const newOtp = [...otp];
+                        newOtp[index] = val;
+                        setOtp(newOtp);
+                        if (val && index < 5) otpRefs.current[index + 1].focus();
+                      }}
                     />
                   ))}
                 </div>
 
                 <button className="primary-btn" onClick={handleVerifyOtp}>
-                  Verify OTP
+                  {t("verify_otp")}
                 </button>
 
                 <div className="resend-section">
                   {timer > 0 ? (
-                    <p>Resend OTP in {timer}s</p>
+                    <p>{t("resend_in")} {timer}s</p>
                   ) : (
                     <button className="resend-btn" onClick={handleResendOtp}>
-                      Resend OTP
+                      {t("resend_otp")}
                     </button>
                   )}
                 </div>
@@ -255,17 +228,8 @@ function Login() {
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i
-              className={`bx ${
-                popupType === "success"
-                  ? "bx-check-circle success-icon"
-                  : "bx-error error-icon"
-              }`}
-            ></i>
+            <i className={`bx ${popupType === "success" ? "bx-check-circle" : "bx-error"}`}></i>
             <h3>{popupMessage}</h3>
-            {popupType === "error" && (
-              <button onClick={() => setPopupMessage("")}>OK</button>
-            )}
           </div>
         </div>
       )}

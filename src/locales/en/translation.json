@@ -1,0 +1,133 @@
+{
+  "home": "Home",
+  "basket": "Basket",
+  "categories": "Categories",
+  "welcome": "Welcome",
+  "menu": "Menu",
+  "all_categories": "All Categories",
+  "my_account": "My Account",
+  "my_orders": "My Orders",
+  "wishlist": "Wishlist",
+  "privacy_policy": "Privacy Policy",
+  "return_refund": "Return & Refund Policy",
+  "contact_us": "Contact Us",
+  "login": "Login",
+  "logout": "Logout",
+  "logout_confirm": "Are you sure you want to logout?",
+  "logout_success": "Logged out successfully",
+  "yes": "Yes",
+  "no": "No",
+  "loading_categories": "Loading categories...",
+
+
+
+
+ 
+  "privacy_policy_page": "Privacy Policy",
+  "pp_intro": "At Vidharthi Store, your privacy is very important to us. This Privacy Policy explains how we collect, use, and protect your information.",
+
+  "pp_1_title": "1. Information We Collect",
+  "pp_1_desc": "We may collect personal information such as your name, phone number, email address, delivery address, and payment details when you use our app.",
+
+  "pp_2_title": "2. How We Use Your Information",
+  "pp_2_desc": "We use your information to process orders, provide customer support, improve our services, and send important updates.",
+
+  "pp_3_title": "3. Data Protection",
+  "pp_3_desc": "We implement appropriate security measures to protect your data from unauthorized access, alteration, or disclosure.",
+
+  "pp_4_title": "4. Sharing of Information",
+  "pp_4_desc": "We do not sell or rent your personal information to third parties. Information may be shared with trusted service providers only for order fulfillment.",
+
+  "pp_5_title": "5. Cookies & Tracking",
+  "pp_5_desc": "Our app may use cookies and tracking technologies to enhance user experience and analyze app performance.",
+
+  "pp_6_title": "6. Your Rights",
+  "pp_6_desc": "You have the right to access, update, or delete your personal information. You may contact us for any privacy-related concerns.",
+
+  "pp_7_title": "7. Updates to Policy",
+  "pp_7_desc": "We may update this Privacy Policy from time to time. Changes will be reflected on this page.",
+
+  "last_updated": "Last Updated: June 2026",
+
+
+  "return_refund_policy": "Return & Refund Policy",
+
+  "rr_intro": "At Vidharthi Store, we strive to ensure complete customer satisfaction. This policy outlines our return and refund process.",
+
+  "rr_1_title": "1. Eligibility for Returns",
+  "rr_1_desc": "Products can be returned within 7 days of delivery if they are:",
+  "rr_1_item1": "Damaged or defective",
+  "rr_1_item2": "Incorrect product delivered",
+  "rr_1_item3": "Expired products",
+
+  "rr_2_title": "2. Non-Returnable Items",
+  "rr_2_desc": "The following items cannot be returned:",
+  "rr_2_item1": "Opened food products",
+  "rr_2_item2": "Perishable items",
+  "rr_2_item3": "Items without original packaging",
+
+  "rr_3_title": "3. Refund Process",
+  "rr_3_desc": "Once your return request is approved, refunds will be processed within 5 7 business days to your original payment method.",
+
+  "rr_4_title": "4. Replacement Option",
+  "rr_4_desc": "Customers may choose a replacement instead of a refund, subject to product availability.",
+
+  "rr_5_title": "5. Cancellation Policy",
+  "rr_5_desc": "Orders can be cancelled before dispatch. Once shipped, cancellation may not be possible.",
+
+  "rr_6_title": "6. Contact Us",
+  "rr_6_desc": "For return or refund requests, please contact our support team through the app or email us at support@vidharthistore.com.",
+
+  "last_updated_return": "Last Updated: June 2026",
+
+  
+  "get_in_touch": "Get in Touch",
+  "contact_subtitle": "We'd love to hear from you. Send us your queries anytime.",
+
+  "your_name": "Your Name",
+  "your_email": "Your Email",
+  "your_message": "Your Message",
+  "send_message": "Send Message",
+
+  "message_sent": "Message sent successfully ✅",
+  
+  
+  "welcome_back": "Welcome Back",
+  "login_continue": "Login to continue",
+  "phone": "Phone",
+  "email": "Email",
+  "enter_phone": "Enter Mobile Number",
+  "enter_email": "Enter Email Address",
+  "send_otp": "Send OTP",
+  "verify_otp": "Verify OTP",
+  "resend_otp": "Resend OTP",
+  "resend_in": "Resend OTP in",
+  "new_user": "New user?",
+  "register_here": "Register here",
+  "invalid_phone": "Enter valid 10 digit mobile number",
+  "invalid_email": "Enter valid email address",
+  "otp_sent": "OTP Sent Successfully",
+  "otp_resent": "OTP Resent Successfully",
+  "otp_failed": "Failed to send OTP",
+  "otp_resend_failed": "Failed to resend OTP",
+  "enter_otp": "Enter 6-digit OTP sent to",
+  "enter_full_otp": "Please enter complete OTP",
+  "invalid_otp": "Invalid OTP",
+  "login_success": "Login Successful!",
+
+  
+  "register": "Register",
+  "create_account": "Create Account",
+  "full_name": "Full Name *",
+  "mobile_number": "Mobile Number *",
+  "email_address": "Email Address *",
+  "already_account": "Already have an account?",
+  "login_here": "Login here",
+
+  "invalid_name": "Enter your full name (at least 2 characters)",
+  "register_success": "Registration Successful!",
+  "register_failed": "Registration failed",
+  "search_placeholder": "Search products..."
+
+
+}
