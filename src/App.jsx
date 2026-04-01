@@ -62,6 +62,7 @@ function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/search" element={<SearchResults />} />
         
+        
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />

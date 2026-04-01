@@ -1,70 +1,47 @@
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 
 function PrivacyPolicy() {
+  const { t } = useTranslation(); // 👈 ADD
 
   return (
     <>
-      <InternalHeader title="Privacy Policy" />
+      <InternalHeader title={t("privacy_policy")} />
 
       <div className="privacy-page content">
-
         <div className="privacy-card">
 
-          <h2>Privacy Policy</h2>
-          <p>
-            At Vidharthi Store, your privacy is very important to us. 
-            This Privacy Policy explains how we collect, use, and protect your information.
-          </p>
+          <h2>{t("privacy_policy_page")}</h2>
 
-          <h3>1. Information We Collect</h3>
-          <p>
-            We may collect personal information such as your name, phone number, 
-            email address, delivery address, and payment details when you use our app.
-          </p>
+          <p>{t("pp_intro")}</p>
 
-          <h3>2. How We Use Your Information</h3>
-          <p>
-            We use your information to process orders, provide customer support, 
-            improve our services, and send important updates.
-          </p>
+          <h3>{t("pp_1_title")}</h3>
+          <p>{t("pp_1_desc")}</p>
 
-          <h3>3. Data Protection</h3>
-          <p>
-            We implement appropriate security measures to protect your data 
-            from unauthorized access, alteration, or disclosure.
-          </p>
+          <h3>{t("pp_2_title")}</h3>
+          <p>{t("pp_2_desc")}</p>
 
-          <h3>4. Sharing of Information</h3>
-          <p>
-            We do not sell or rent your personal information to third parties. 
-            Information may be shared with trusted service providers only for order fulfillment.
-          </p>
+          <h3>{t("pp_3_title")}</h3>
+          <p>{t("pp_3_desc")}</p>
 
-          <h3>5. Cookies & Tracking</h3>
-          <p>
-            Our app may use cookies and tracking technologies to enhance user experience 
-            and analyze app performance.
-          </p>
+          <h3>{t("pp_4_title")}</h3>
+          <p>{t("pp_4_desc")}</p>
 
-          <h3>6. Your Rights</h3>
-          <p>
-            You have the right to access, update, or delete your personal information. 
-            You may contact us for any privacy-related concerns.
-          </p>
+          <h3>{t("pp_5_title")}</h3>
+          <p>{t("pp_5_desc")}</p>
 
-          <h3>7. Updates to Policy</h3>
-          <p>
-            We may update this Privacy Policy from time to time. 
-            Changes will be reflected on this page.
-          </p>
+          <h3>{t("pp_6_title")}</h3>
+          <p>{t("pp_6_desc")}</p>
+
+          <h3>{t("pp_7_title")}</h3>
+          <p>{t("pp_7_desc")}</p>
 
           <p className="last-updated">
-            Last Updated: June 2026
+            {t("last_updated")}
           </p>
 
         </div>
-
       </div>
 
       <BottomNav />

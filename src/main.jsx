@@ -8,6 +8,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { AppSettingsProvider } from "./context/AppSettingsContext";
 import { NavigationProvider } from "./context/NavigationContext";
+import "./i18n";
 import "./style.css";
 
 

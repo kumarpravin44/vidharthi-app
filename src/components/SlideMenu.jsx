@@ -2,10 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { getAvatarUrl } from '../utils/placeholderImage';
+import { useTranslation } from "react-i18next"; // 👈 ADD
 
 function SlideMenu({ open, setOpen }) {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+  const { t } = useTranslation(); // 👈 ADD
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -16,7 +18,7 @@ function SlideMenu({ open, setOpen }) {
   };
 
   const handleLogout = () => {
-    setShowConfirm(true); // open confirm popup
+    setShowConfirm(true);
   };
 
   const confirmLogout = () => {
@@ -24,7 +26,7 @@ function SlideMenu({ open, setOpen }) {
     handleClose();
     setShowConfirm(false);
 
-    setPopupMessage("Logged out successfully");
+    setPopupMessage(t("logout_success")); // 👈 translated
     setPopupType("success");
 
     setTimeout(() => {
@@ -38,27 +40,23 @@ function SlideMenu({ open, setOpen }) {
 
   return (
     <>
-      {open && (
-        <div className="overlay" onClick={handleClose}></div>
-      )}
+      {open && <div className="overlay" onClick={handleClose}></div>}
 
       <div className={`side-menu ${open ? "active" : ""}`}>
         <div className="menu-header">
-          <h3>Menu</h3>
+          <h3>{t("menu")}</h3> {/* 👈 */}
           <i className="bx bx-x" onClick={handleClose}></i>
         </div>
 
         {isAuthenticated && user && (
           <div style={{ padding: "15px", borderBottom: "1px solid #eee" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                className="profile-avatar"
-              >
+              <div className="profile-avatar">
                 {user.avatar_url ? (
-                                  <img src={getAvatarUrl(user.avatar_url)} alt={user.full_name} />
-                                ) : (
-                                  <i className='bx bx-user'></i>
-                                )}
+                  <img src={getAvatarUrl(user.avatar_url)} alt={user.full_name} />
+                ) : (
+                  <i className='bx bx-user'></i>
+                )}
               </div>
               <div>
                 <h4 style={{ margin: 0, fontSize: "16px" }}>
@@ -75,13 +73,13 @@ function SlideMenu({ open, setOpen }) {
         <ul>
           <li onClick={handleClose}>
             <Link to="/">
-              <i className="bx bx-home"></i> Home
+              <i className="bx bx-home"></i> {t("home")}
             </Link>
           </li>
 
           <li onClick={handleClose}>
             <Link to="/all-categories">
-              <i className="bx bx-category"></i> All Categories
+              <i className="bx bx-category"></i> {t("all_categories")}
             </Link>
           </li>
 
@@ -89,17 +87,17 @@ function SlideMenu({ open, setOpen }) {
             <>
               <li onClick={handleClose}>
                 <Link to="/account">
-                  <i className="bx bx-user"></i> My Account
+                  <i className="bx bx-user"></i> {t("my_account")}
                 </Link>
               </li>
               <li onClick={handleClose}>
                 <Link to="/orders">
-                  <i className="bx bx-package"></i> My Orders
+                  <i className="bx bx-package"></i> {t("my_orders")}
                 </Link>
               </li>
               <li onClick={handleClose}>
                 <Link to="/wishlist">
-                  <i className="bx bx-heart"></i> Wishlist
+                  <i className="bx bx-heart"></i> {t("wishlist")}
                 </Link>
               </li>
             </>
@@ -107,32 +105,32 @@ function SlideMenu({ open, setOpen }) {
 
           <li onClick={handleClose}>
             <Link to="/privacy-policy">
-              <i className="bx bx-shield"></i> Privacy Policy
+              <i className="bx bx-shield"></i> {t("privacy_policy")}
             </Link>
           </li>
 
           <li onClick={handleClose}>
             <Link to="/return-refund-policy">
-              <i className="bx bx-rotate-left"></i> Return & Refund Policy
+              <i className="bx bx-rotate-left"></i> {t("return_refund")}
             </Link>
           </li>
 
           <li onClick={handleClose}>
             <Link to="/contact-us">
-              <i className="bx bx-phone"></i> Contact Us
+              <i className="bx bx-phone"></i> {t("contact_us")}
             </Link>
           </li>
 
           {isAuthenticated ? (
             <li style={{ cursor: "pointer" }} onClick={handleLogout}>
               <a>
-                <i className="bx bx-log-out"></i> Logout
+                <i className="bx bx-log-out"></i> {t("logout")}
               </a>
             </li>
           ) : (
             <li onClick={handleClose}>
               <Link to="/login">
-                <i className="bx bx-log-in"></i> Login
+                <i className="bx bx-log-in"></i> {t("login")}
               </Link>
             </li>
           )}
@@ -143,25 +141,19 @@ function SlideMenu({ open, setOpen }) {
       {showConfirm && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i
-              className={'bx bx-log-out'}
-              style={{ fontSize: "35px", color: "#ff4d4f" }}
-            ></i>
-            <h3>Are you sure you want to logout?</h3>
+            <i className="bx bx-log-out" style={{ fontSize: "35px", color: "#ff4d4f" }}></i>
+            <h3>{t("logout_confirm")}</h3> {/* 👈 */}
             <div style={{ marginTop: "15px" }}>
-              <button onClick={confirmLogout}>Yes</button>
-              <button
-                onClick={cancelLogout}
-                style={{ marginLeft: "10px" }}
-              >
-                No
+              <button onClick={confirmLogout}>{t("yes")}</button>
+              <button onClick={cancelLogout} style={{ marginLeft: "10px" }}>
+                {t("no")}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Success / Error Popup */}
+      {/* Success Popup */}
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">

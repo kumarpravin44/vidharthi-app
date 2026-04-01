@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
 import Loader from "../components/Loader";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 
 import saltImg from "../images/product/salt.webp";
 import drinksImg from "../images/product/drinks.webp";
@@ -12,6 +13,7 @@ import dryfruitsImg from "../images/product/dryfruits.webp";
 function Categories({ parentCategoryId = null, categories = null }) {
   const [localCategories, setLocalCategories] = useState(categories || []);
   const [loading, setLoading] = useState(!categories);
+  const { t } = useTranslation(); // 👈 ADD
 
   const defaultImages = {
     0: saltImg,
@@ -21,13 +23,11 @@ function Categories({ parentCategoryId = null, categories = null }) {
   };
 
   useEffect(() => {
-    // If categories are passed as prop, use them directly
     if (categories !== null) {
       setLocalCategories(categories);
       setLoading(false);
       return;
     }
-    // Otherwise, fetch from API
     loadCategories();
   }, [parentCategoryId, categories]);
 
@@ -41,18 +41,18 @@ function Categories({ parentCategoryId = null, categories = null }) {
       }
       setLocalCategories(data);
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      console.error("Failed to load categories:", error);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-  return <Loader text="Loading Categories..." />;
-}
+    return <Loader text={t("loading_categories")} />; // 👈 TRANSLATED
+  }
 
   if (localCategories.length === 0) {
-    return null; // Don't show anything if no categories
+    return null;
   }
 
   return (
@@ -64,14 +64,23 @@ function Categories({ parentCategoryId = null, categories = null }) {
           className="category-link"
         >
           <div className="category-card">
-            <img 
-              src={category.image_url ? getImageWithFallback(category.image_url) : (defaultImages[index % 4] || noImagePlaceholder)} 
+            <img
+              src={
+                category.image_url
+                  ? getImageWithFallback(category.image_url)
+                  : defaultImages[index % 4] || noImagePlaceholder
+              }
               alt={category.name}
               onError={(e) => {
                 e.target.src = noImagePlaceholder;
               }}
             />
-            <p>{category.name}</p>
+
+            {/* 👇 IMPORTANT */}
+            <p>
+              {t(`category.${category.name}`, category.name)}
+            </p>
+
           </div>
         </Link>
       ))}

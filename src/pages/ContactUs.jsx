@@ -2,10 +2,12 @@ import { useState } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 import "boxicons/css/boxicons.min.css";
 
 function ContactUs() {
   const { settings: appSettings } = useAppSettings();
+  const { t } = useTranslation(); // 👈 ADD
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,21 +24,21 @@ function ContactUs() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Message sent successfully ✅");
+    alert(t("message_sent")); // 👈 translated
     setFormData({ name: "", email: "", message: "" });
   };
 
   return (
     <>
-      <InternalHeader title="Contact Us" />
+      <InternalHeader title={t("contact_us")} />
 
       <div className="contact-page content">
-
         <div className="contact-card">
 
-          <h2>Get in Touch</h2>
+          <h2>{t("get_in_touch")}</h2>
+
           <p className="contact-subtitle">
-            We'd love to hear from you. Send us your queries anytime.
+            {t("contact_subtitle")}
           </p>
 
           {/* Contact Info */}
@@ -59,13 +61,14 @@ function ContactUs() {
 
           </div>
 
-          {/* Contact Form */}
-          {/* <form onSubmit={handleSubmit} className="contact-form">
+          {/* Contact Form (optional) */}
+          {/* 
+          <form onSubmit={handleSubmit} className="contact-form">
 
             <input
               type="text"
               name="name"
-              placeholder="Your Name"
+              placeholder={t("your_name")}
               value={formData.name}
               onChange={handleChange}
               required
@@ -74,7 +77,7 @@ function ContactUs() {
             <input
               type="email"
               name="email"
-              placeholder="Your Email"
+              placeholder={t("your_email")}
               value={formData.email}
               onChange={handleChange}
               required
@@ -82,7 +85,7 @@ function ContactUs() {
 
             <textarea
               name="message"
-              placeholder="Your Message"
+              placeholder={t("your_message")}
               rows="4"
               value={formData.message}
               onChange={handleChange}
@@ -90,13 +93,13 @@ function ContactUs() {
             />
 
             <button type="submit" className="primary-btn">
-              Send Message
+              {t("send_message")}
             </button>
 
-          </form> */}
+          </form> 
+          */}
 
         </div>
-
       </div>
 
       <BottomNav />
