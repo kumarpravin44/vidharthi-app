@@ -8,11 +8,13 @@ import { useAppSettings } from "../context/AppSettingsContext";
 import { orderService } from "../services/orderService";
 import { addressService } from "../services/addressService";
 import { useLoader } from "../context/LoaderContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function Checkout() {
   const navigate = useNavigate();
   const { cart, totalAmount, clearCart } = useCart();
+  const { getLocalizedName } = useLanguage();
   const { user, isAuthenticated } = useAuth();
   const { settings: appSettings } = useAppSettings();
   const { setLoading } = useLoader();
@@ -353,7 +355,7 @@ function Checkout() {
 
             {cart.items.map(item => (
               <div className="summary-item" key={item.product_id}>
-                <span>{item.product?.name} × {item.quantity}</span>
+                <span>{getLocalizedName(item.product)} × {item.quantity}</span>
                 <span>₹ {(item.product?.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}

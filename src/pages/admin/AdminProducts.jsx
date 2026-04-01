@@ -21,7 +21,9 @@ function AdminProducts() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [formData, setFormData] = useState({
     name: "",
+    name_hi: "",
     description: "",
+    description_hi: "",
     price: "",
     mrp: "",
     stock: "",
@@ -63,7 +65,9 @@ function AdminProducts() {
     setEditingProduct(null);
     setFormData({
       name: "",
+      name_hi: "",
       description: "",
+      description_hi: "",
       price: "",
       mrp: "",
       stock: "",
@@ -77,7 +81,9 @@ function AdminProducts() {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      name_hi: product.name_hi || "",
       description: product.description || "",
+      description_hi: product.description_hi || "",
       price: product.price,
       mrp: product.mrp || "",
       stock: product.stock || 0,
@@ -119,7 +125,9 @@ function AdminProducts() {
       // Send mrp as well (from mrp field)
       const productData = {
         name: formData.name,
+        name_hi: formData.name_hi || "",
         description: formData.description || null,
+        description_hi: formData.description_hi || "",
         price: price,
         mrp: mrp,
         stock: parseInt(formData.stock),
@@ -373,12 +381,34 @@ function AdminProducts() {
               </div>
 
               <div className="form-group">
+                <label>Hindi Name (हिन्दी नाम)</label>
+                <input
+                  type="text"
+                  name="name_hi"
+                  value={formData.name_hi}
+                  onChange={handleChange}
+                  placeholder="उत्पाद का नाम हिन्दी में"
+                />
+              </div>
+
+              <div className="form-group">
                 <label>Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   rows="3"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Hindi Description (हिन्दी विवरण)</label>
+                <textarea
+                  name="description_hi"
+                  value={formData.description_hi}
+                  onChange={handleChange}
+                  rows="3"
+                  placeholder="उत्पाद का विवरण हिन्दी में"
                 />
               </div>
 

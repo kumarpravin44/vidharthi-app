@@ -5,12 +5,14 @@ import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function MyOrders() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
+  const { getLocalizedName } = useLanguage();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(null);
@@ -141,7 +143,7 @@ function MyOrders() {
                 <div className="order-items">
                   {order.items?.map((item, idx) => (
                     <span key={idx}>
-                      {item.product?.name || 'Product'} × {item.quantity}
+                      {getLocalizedName(item.product) || 'Product'} × {item.quantity}
                       {idx < order.items.length - 1 && ', '}
                     </span>
                   ))}

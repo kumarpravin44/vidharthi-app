@@ -6,12 +6,12 @@ import Categories from "../components/Categories";
 import CategoryProducts from "../components/CategoryProducts";
 import BottomNav from "../components/BottomNav";
 import { productService } from "../services/productService";
-import { useTranslation } from "react-i18next"; // 👈 ADD
+import { useLanguage } from "../context/LanguageContext";
 
 function Home() {
   const [categoriesTree, setCategoriesTree] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation(); // 👈 ADD
+  const { t, getLocalizedName } = useLanguage();
 
   useEffect(() => {
     loadCategoriesTree();
@@ -48,7 +48,7 @@ function Home() {
                 
                 {/* ⚠️ Dynamic text */}
                 <h3 className="category-group-heading">
-                  {parentCategory.name}
+                  {getLocalizedName(parentCategory)}
                 </h3>
 
                 {parentCategory.children && parentCategory.children.length > 0 ? (
@@ -56,7 +56,7 @@ function Home() {
                 ) : (
                   <CategoryProducts
                     categoryId={parentCategory.id}
-                    categoryName={parentCategory.name}
+                    categoryName={getLocalizedName(parentCategory)}
                     limit={8}
                   />
                 )}

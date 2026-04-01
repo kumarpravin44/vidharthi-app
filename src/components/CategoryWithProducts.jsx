@@ -4,6 +4,7 @@ import { productService } from "../services/productService";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
 
 function CategoryWithProducts() {
   const [categoriesWithProducts, setCategoriesWithProducts] = useState([]);
@@ -13,6 +14,7 @@ function CategoryWithProducts() {
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { getLocalizedName } = useLanguage();
 
   useEffect(() => {
     loadCategoriesWithProducts();
@@ -125,7 +127,7 @@ function CategoryWithProducts() {
         <div key={category.id} className="category-section">
           {/* Category Header */}
           <div className="category-header">
-            <h2>{category.name}</h2>
+            <h2>{getLocalizedName(category)}</h2>
             <Link to={`/category/${category.id}`} className="view-all-link">
               View All <i className="bx bx-chevron-right"></i>
             </Link>
@@ -153,7 +155,7 @@ function CategoryWithProducts() {
                   )}
                 </div>
                 <div className="product-info">
-                  <h3>{truncateText(product.name, 40)}</h3>
+                  <h3>{truncateText(getLocalizedName(product), 40)}</h3>
                   <p className="product-unit">{product.unit}</p>
                   <div className="product-footer">
                     <span className="product-price">₹{product.price}</span>

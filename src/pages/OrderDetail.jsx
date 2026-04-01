@@ -5,6 +5,7 @@ import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function OrderDetail() {
@@ -12,6 +13,7 @@ function OrderDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
+  const { getLocalizedName } = useLanguage();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(false);
@@ -179,7 +181,7 @@ function OrderDetail() {
                   )}
                   <div className="order-item-details">
                     <p className="item-name">
-                      {item.product?.name || `Product ID: ${item.product_id.substring(0, 8)}`}
+                      {getLocalizedName(item.product) || `Product ID: ${item.product_id.substring(0, 8)}`}
                     </p>
                     <p className="item-qty">Quantity: {item.quantity}</p>
                   </div>

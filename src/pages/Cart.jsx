@@ -5,6 +5,7 @@ import BottomNav from "../components/BottomNav";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 import saltImg from "../images/product/salt.webp";
@@ -13,6 +14,7 @@ function Cart() {
   const navigate = useNavigate();
   const { cart, loading, totalAmount, updateItem, removeItem } = useCart();
   const { isAuthenticated } = useAuth();
+  const { getLocalizedName } = useLanguage();
   const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
@@ -97,7 +99,7 @@ function Cart() {
                   />
 
                   <div className="cart-details">
-                    <h4>{item.product?.name}</h4>
+                    <h4>{getLocalizedName(item.product)}</h4>
                     <p>₹ {item.unit_price}</p>
 
                     <div className="qty-controls">

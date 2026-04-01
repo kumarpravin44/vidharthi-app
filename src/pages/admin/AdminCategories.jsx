@@ -16,8 +16,10 @@ function AdminCategories() {
   const [expandedParents, setExpandedParents] = useState({});
   const [formData, setFormData] = useState({
     name: "",
+    name_hi: "",
     slug: "",
     description: "",
+    description_hi: "",
     image_url: "",
     parent_id: "",
     sort_order: 0,
@@ -52,8 +54,10 @@ function AdminCategories() {
     setEditingCategory(null);
     setFormData({
       name: "",
+      name_hi: "",
       slug: "",
       description: "",
+      description_hi: "",
       image_url: "",
       parent_id: parentId || "",
       sort_order: 0,
@@ -67,8 +71,10 @@ function AdminCategories() {
     setEditingCategory(category);
     setFormData({
       name: category.name,
+      name_hi: category.name_hi || "",
       slug: category.slug,
       description: category.description || "",
+      description_hi: category.description_hi || "",
       image_url: category.image_url || "",
       parent_id: category.parent_id || "",
       sort_order: category.sort_order ?? 0,
@@ -103,8 +109,10 @@ function AdminCategories() {
     e.preventDefault();
     const payload = {
       name: formData.name,
+      name_hi: formData.name_hi || "",
       slug: formData.slug,
       description: formData.description || null,
+      description_hi: formData.description_hi || "",
       image_url: formData.image_url || null,
       parent_id: formData.parent_id || null,
       sort_order: Number(formData.sort_order) || 0,
@@ -284,6 +292,11 @@ function AdminCategories() {
               </div>
 
               <div className="form-group">
+                <label>Hindi Name (हिन्दी नाम)</label>
+                <input type="text" name="name_hi" value={formData.name_hi} onChange={handleChange} placeholder="श्रेणी का नाम हिन्दी में" />
+              </div>
+
+              <div className="form-group">
                 <label>Slug *</label>
                 <input
                   type="text"
@@ -307,6 +320,11 @@ function AdminCategories() {
               <div className="form-group">
                 <label>Description</label>
                 <textarea name="description" value={formData.description} onChange={handleChange} rows="2" placeholder="Brief description" />
+              </div>
+
+              <div className="form-group">
+                <label>Hindi Description (हिन्दी विवरण)</label>
+                <textarea name="description_hi" value={formData.description_hi} onChange={handleChange} rows="2" placeholder="श्रेणी का विवरण हिन्दी में" />
               </div>
 
               <ImageUpload

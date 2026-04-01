@@ -7,6 +7,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 import saltImg from "../images/product/salt.webp";
@@ -17,6 +18,7 @@ function ProductDetail() {
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+  const { getLocalizedName, getLocalizedDescription } = useLanguage();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -161,7 +163,7 @@ function ProductDetail() {
         {/* Info Section */}
         <div className="product-info-card">
 
-          <h2>{product.name}</h2>
+          <h2>{getLocalizedName(product)}</h2>
           <p className="product-price">
             <span>₹ {product.price}</span> 
             {product.mrp && product.mrp > product.price && (
@@ -185,7 +187,7 @@ function ProductDetail() {
          
           {product.description && (
             <p className="product-description">
-              {product.description}
+              {getLocalizedDescription(product)}
             </p>
           )}
 
