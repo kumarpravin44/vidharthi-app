@@ -5,11 +5,13 @@ import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import "boxicons/css/boxicons.min.css";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 
 import saltImg from "../../images/product/salt.webp";
 
 function AdminProducts() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ function AdminProducts() {
       setCategories(categoriesData);
     } catch (error) {
       console.error('Failed to load data:', error);
-      showPopup("Failed to load data");
+      showPopup(t("failed_load_data"));
     } finally {
       setLoading(false);
     }
@@ -94,14 +96,14 @@ function AdminProducts() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    if (!confirm(t("are_you_sure_delete"))) return;
 
     try {
       await adminService.deleteProduct(id);
-      showPopup("Product deleted successfully");
+      showPopup(t("product_deleted"));
       loadData();
     } catch (error) {
-      showPopup("Failed to delete product");
+      showPopup(t("failed_delete_product"));
     }
   };
 
@@ -118,7 +120,7 @@ function AdminProducts() {
       
       // Validate MRP
       if (mrp !== null && mrp < price) {
-        showPopup(`MRP (₹${mrp}) cannot be less than selling price (₹${price})`);
+        showPopup(`MRP (₹${mrp}) ${t("cannot_be_less_than")} selling price (₹${price})`);
         return;
       }
       
@@ -141,12 +143,12 @@ function AdminProducts() {
         console.log('Updating product with ID:', editingProduct.id);
         const result = await adminService.updateProduct(editingProduct.id, productData);
         console.log('Update result:', result);
-        showPopup("Product updated successfully");
+        showPopup(t("product_updated"));
       } else {
         console.log('Creating new product');
         const result = await adminService.createProduct(productData);
         console.log('Create result:', result);
-        showPopup("Product created successfully");
+        showPopup(t("product_created"));
       }
       setShowModal(false);
       loadData();
@@ -219,7 +221,7 @@ function AdminProducts() {
   }, [products, filterCategory, filterStock, sortConfig]);
 
   if (loading) {
-    return <Loader text="Loading products..." />;
+    return <Loader text={t("loading_products")} />;
   }
 
   return (

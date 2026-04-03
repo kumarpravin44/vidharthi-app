@@ -4,6 +4,7 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useLoader } from "../context/LoaderContext";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import { authService } from "../services/authService";
 import { getAvatarUrl } from "../utils/placeholderImage";
 import "boxicons/css/boxicons.min.css";
@@ -12,6 +13,7 @@ function EditProfile() {
   const navigate = useNavigate();
   const { setLoading } = useLoader();
   const { user, isAuthenticated, updateProfile, refreshUser } = useAuth();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -83,9 +85,9 @@ function EditProfile() {
       await refreshUser();
       // Clear local blob preview and let the user data populate the real URL
       setProfileImage(null);
-      showPopup("Profile Updated Successfully ✅", "success");
+      showPopup(t("profile_updated"), "success");
     } catch (error) {
-      showPopup(error.message || "Failed to update profile", "error");
+      showPopup(error.message || t("failed_update_profile"), "error");
     } finally {
       setLoading(false);
     }
@@ -94,9 +96,9 @@ function EditProfile() {
   if (!user) {
     return (
       <>
-        <InternalHeader title="Edit Profile" />
+        <InternalHeader title={t("edit_profile")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading...</p>
+          <p style={{ textAlign: 'center', padding: '20px' }}>{t("loading_profile")}</p>
         </div>
         <BottomNav />
       </>
@@ -105,7 +107,7 @@ function EditProfile() {
 
   return (
     <>
-      <InternalHeader title="Edit Profile" />
+      <InternalHeader title={t("edit_profile")} />
 
       <div className="edit-profile-page content">
 
@@ -122,7 +124,7 @@ function EditProfile() {
             </div>
 
             <label className="upload-btn">
-              Change Photo
+              {t("change_photo")}
               <input
                 type="file"
                 hidden
@@ -134,43 +136,43 @@ function EditProfile() {
 
           {/* Form */}
           <div className="form-group">
-            <label>Full Name</label>
+            <label>{t("full_name")}</label>
             <input
               type="text"
               name="full_name"
               value={formData.full_name}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              placeholder={t("enter_full_name")}
             />
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label>{t("email")}</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder={t("enter_email")}
             />
           </div>
 
           <div className="form-group">
-            <label>Mobile Number</label>
+            <label>{t("mobile_number")}</label>
             <input
               type="text"
               value={user.phone}
               readOnly
               style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
             />
-            <small style={{ color: '#666', fontSize: '12px' }}>Phone number cannot be changed</small>
+            <small style={{ color: '#666', fontSize: '12px' }}>{t("phone_cannot_changed")}</small>
           </div>
 
           <button
             className="primary-btn"
             onClick={handleSave}
           >
-            Save Changes
+            {t("save_changes")}
           </button>
 
         </div>

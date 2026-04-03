@@ -14,7 +14,7 @@ function Cart() {
   const navigate = useNavigate();
   const { cart, loading, totalAmount, updateItem, removeItem } = useCart();
   const { isAuthenticated } = useAuth();
-  const { getLocalizedName } = useLanguage();
+  const { getLocalizedName, t } = useLanguage();
   const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function Cart() {
     try {
       await updateItem(productId, currentQty + 1);
     } catch (error) {
-      showPopup(error.message || "Failed to update quantity");
+      showPopup(t("failed_update_quantity"));
     }
   };
 
@@ -43,7 +43,7 @@ function Cart() {
       try {
         await updateItem(productId, currentQty - 1);
       } catch (error) {
-        showPopup(error.message || "Failed to update quantity");
+        showPopup(t("failed_update_quantity"));
       }
     }
   };
@@ -52,18 +52,20 @@ function Cart() {
   const handleRemoveItem = async (productId) => {
     try {
       await removeItem(productId);
-      showPopup("Item removed from cart");
+      showPopup(t("item_removed"));
     } catch (error) {
-      showPopup(error.message || "Failed to remove item");
+      showPopup(t("failed_remove_item"));
     }
   };
 
   if (loading) {
     return (
       <>
-        <InternalHeader title="My Cart" />
+        <InternalHeader title={t("my_cart")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading cart...</p>
+          <p style={{ textAlign: 'center', padding: '20px' }}>
+            {t("loading_cart")}
+          </p>
         </div>
         <BottomNav />
       </>
@@ -74,7 +76,7 @@ function Cart() {
 
   return (
     <>
-      <InternalHeader title="My Cart" />
+      <InternalHeader title={t("my_cart")} />
 
       <div className="content">
         <div className="cart-page">
@@ -82,9 +84,9 @@ function Cart() {
           {cartItems.length === 0 ? (
             <div className="empty-cart">
               <i className='bx bx-cart' style={{ fontSize: '64px', color: '#ccc' }}></i>
-              <p>Your cart is empty</p>
+              <p>{t("your_cart_empty")}</p>
               <Link to="/" className="primary-btn" style={{ marginTop: '20px' }}>
-                Continue Shopping
+                {t("continue_shopping")}
               </Link>
             </div>
           ) : (
@@ -118,9 +120,9 @@ function Cart() {
               ))}
 
               <div className="cart-summary">
-                <h3>Total: ₹ {totalAmount.toFixed(2)}</h3>
+                <h3>{t("total")}: ₹ {totalAmount.toFixed(2)}</h3>
                 <Link to="/checkout" className="checkout-btn">
-                  Proceed to Checkout
+                  {t("proceed_checkout")}
                 </Link>
               </div>
             </>

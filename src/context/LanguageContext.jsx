@@ -380,7 +380,19 @@ export function LanguageProvider({ children }) {
   }, [language]);
 
   const t = (key) => {
-    return translations[language]?.[key] || translations.en[key] || key;
+    // Use current language source directly (synchronous) to avoid first-click mismatch.
+    const selected = translations[language] || translations.en;
+    if (selected[key]) {
+      return selected[key];
+    }
+
+    // fallback to i18next in case resource is available
+    const i18nextValue = i18n.t(key, { lng: language });
+    if (i18nextValue && i18nextValue !== key) {
+      return i18nextValue;
+    }
+
+    return translations.en[key] || key;
   };
 
   // Get localized name: returns Hindi name if language is Hindi and name_hi exists, else English name
@@ -400,7 +412,11 @@ export function LanguageProvider({ children }) {
   };
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "hi" : "en"));
+    setLanguage((prev) => {
+      const next = prev === "en" ? "hi" : "en";
+      i18n.changeLanguage(next);
+      return next;
+    });
   };
 
   return (

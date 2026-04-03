@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 import Loader from "../../components/Loader";
 
 function AdminOrders() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [allOrders, setAllOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ function AdminOrders() {
       setAllOrders(data);
     } catch (error) {
       console.error('Failed to load orders:', error);
-      showPopup("Failed to load orders");
+      showPopup(t("failed_load_orders"));
     } finally {
       setLoading(false);
     }
@@ -48,10 +50,10 @@ function AdminOrders() {
     try {
       debugger;
       await adminService.updateOrderStatus(orderId, newStatus);
-      showPopup("Order status updated successfully");
+      showPopup(t("order_status_updated"));
       await loadOrders();
     } catch (error) {
-      showPopup("Failed to update order status");
+      showPopup(t("failed_update_order_status"));
     } finally {
       // setLoading(false);
     }
@@ -80,7 +82,7 @@ function AdminOrders() {
   };
 
   if (loading) {
-    return <Loader text="Loading orders..." />;
+    return <Loader text={t("loading_orders")} />;
   }
 
   return (
@@ -89,19 +91,22 @@ function AdminOrders() {
       <div className="admin-content">
         <div className="admin-page-header">
           <div>
-            <h1>Orders Management</h1>
-            <p>Manage customer orders and fulfillment {filterStatus && `(Showing ${filteredOrders.length} ${filterStatus} order${filteredOrders.length !== 1 ? 's' : ''})`}</p>
+            <h1>{t("orders_management")}</h1>
+            <p>
+              {t("orders_management_desc")}
+              {filterStatus && ` (${t("showing")}: ${filteredOrders.length} ${t(filterStatus)} ${filteredOrders.length !== 1 ? t("orders") : t("order")})`}
+            </p>
           </div>
           <div className="filter-section">
-            <label>Filter by Status:</label>
+            <label>{t("filter_by_status")}</label>
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">All Orders</option>
-              <option value="placed">Placed</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="packed">Packed</option>
-              <option value="out_for_delivery">Out for Delivery</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="">{t("all_orders")}</option>
+              <option value="placed">{t("placed")}</option>
+              <option value="confirmed">{t("confirmed")}</option>
+              <option value="packed">{t("packed")}</option>
+              <option value="out_for_delivery">{t("out_for_delivery")}</option>
+              <option value="delivered">{t("delivered")}</option>
+              <option value="cancelled">{t("cancelled")}</option>
             </select>
           </div>
         </div>
@@ -110,21 +115,21 @@ function AdminOrders() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>{t("order_id")}</th>
+                <th>{t("customer")}</th>
+                <th>{t("date")}</th>
+                <th>{t("items")}</th>
+                <th>{t("total")}</th>
+                <th>{t("payment")}</th>
+                <th>{t("status")}</th>
+                <th>{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
-                    No orders found
+                    {t("no_orders_found")}
                   </td>
                 </tr>
               ) : (
@@ -132,22 +137,22 @@ function AdminOrders() {
                   <tr key={order.id}>
                     <td><strong>#{order.id}</strong></td>
                     <td>
-                      <div>{order.user?.full_name || 'N/A'}</div>
+                      <div>{order.user?.full_name || t("na")}</div>
                       <div style={{ fontSize: '12px', color: '#666' }}>
                         {order.user?.phone || ''}
                       </div>
                     </td>
                     <td>{formatDate(order.created_at)}</td>
-                    <td>{order.items?.length || 0} items</td>
+                    <td>{order.items?.length || 0} {t("items")}</td>
                     <td><strong>₹{order.subtotal?.toFixed(2) || '0.00'}</strong></td>
                     <td>
                       <span className={`payment-badge ${order.payment_method}`}>
-                        {order.payment_method === 'cod' ? 'COD' : 'Online'}
+                        {order.payment_method === 'cod' ? t("cod") : t("online")}
                       </span>
                     </td>
                     <td>
                       <span className={`status-badge ${getStatusColor(order.status)}`}>
-                        {order.status}
+                        {t(order.status)}
                       </span>
                     </td>
                     <td>
@@ -155,7 +160,7 @@ function AdminOrders() {
                         <button
                           className="action-btn view-btn"
                           onClick={() => navigate(`/admin/order/${order.id}`)}
-                          title="View Details"
+                          title={t("view_details")}
                         >
                           <i className='bx bx-show'></i>
                         </button>

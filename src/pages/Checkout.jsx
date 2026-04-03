@@ -14,7 +14,7 @@ import "boxicons/css/boxicons.min.css";
 function Checkout() {
   const navigate = useNavigate();
   const { cart, totalAmount, clearCart } = useCart();
-  const { getLocalizedName } = useLanguage();
+  const { getLocalizedName, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
   const { settings: appSettings } = useAppSettings();
   const { setLoading } = useLoader();
@@ -119,7 +119,7 @@ function Checkout() {
 
   const handleSaveNewAddress = async () => {
     if (!newAddress.street || !newAddress.city || !newAddress.state || !newAddress.pincode) {
-      showPopup("Please fill all required address fields", "error");
+      showPopup(t("please_fill_fields"), "error");
       return;
     }
 
@@ -130,9 +130,9 @@ function Checkout() {
       setSelectedAddressId(saved.id);
       setAddressMode("saved");
       setNewAddress({ label: "home", street: "", city: "", state: "", pincode: "", is_default: false });
-      showPopup("Address saved successfully!");
+      showPopup(t("address_saved"));
     } catch (error) {
-      showPopup(error.message || "Failed to save address", "error");
+      showPopup(error.message || t("failed_save_address"), "error");
     } finally {
       setSavingAddress(false);
     }
@@ -149,7 +149,7 @@ function Checkout() {
   const handlePlaceOrder = async () => {
     const deliveryAddress = getDeliveryAddress();
     if (!deliveryAddress) {
-      showPopup("Please select or enter a delivery address", "error");
+      showPopup(t("please_select_address"), "error");
       return;
     }
 
@@ -168,23 +168,23 @@ function Checkout() {
       await clearCart();
       
       setLoading(false);
-      showPopup("Order placed successfully! 🎉", "success");
+      showPopup(t("order_placed"), "success");
       
       setTimeout(() => {
         navigate(`/orders`);
       }, 2000);
     } catch (error) {
       setLoading(false);
-      showPopup(error.message || "Failed to place order", "error");
+      showPopup(error.message || t("failed_place_order"), "error");
     }
   };
 
   if (!cart || !cart.items) {
     return (
       <>
-        <InternalHeader title="Checkout" />
+        <InternalHeader title={t("checkout")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading...</p>
+          <p style={{ textAlign: 'center', padding: '20px' }}>{t("loading_checkout")}</p>
         </div>
         <BottomNav />
       </>
@@ -193,7 +193,7 @@ function Checkout() {
 
   return (
     <>
-      <InternalHeader title="Checkout" />
+      <InternalHeader title={t("checkout")} />
       <div className="content">
         <div className="checkout-page">
 
@@ -205,7 +205,7 @@ function Checkout() {
             }}>
               <i className='bx bx-error-circle' style={{ fontSize: '22px', color: '#e65100' }}></i>
               <span style={{ color: '#e65100', fontSize: '14px', fontWeight: 500 }}>
-                {appSettings.maintenance_message || "We are currently under maintenance. Please try again later."}
+                {appSettings.maintenance_message || t("store_maintenance")}
               </span>
             </div>
           )}
@@ -214,11 +214,11 @@ function Checkout() {
           <div className="checkout-card">
             <div className="card-header">
               <i className='bx bx-map'></i>
-              <h4>Delivery Address</h4>
+              <h4>{t("delivery_address")}</h4>
             </div>
 
             {loadingAddresses ? (
-              <p style={{ color: '#999', fontSize: '14px' }}>Loading addresses...</p>
+              <p style={{ color: '#999', fontSize: '14px' }}>{t("loading_addresses")}</p>
             ) : (
               <>
                 {/* Address mode tabs */}
@@ -228,13 +228,13 @@ function Checkout() {
                     onClick={() => setAddressMode("saved")}
                     disabled={savedAddresses.length === 0}
                   >
-                    <i className='bx bx-bookmark'></i> Saved Addresses
+                    <i className='bx bx-bookmark'></i> {t("saved_addresses")}
                   </button>
                   <button
                     className={`mode-tab ${addressMode === "new" ? "active" : ""}`}
                     onClick={() => setAddressMode("new")}
                   >
-                    <i className='bx bx-plus'></i> New Address
+                    <i className='bx bx-plus'></i> {t("new_address")}
                   </button>
                 </div>
 
@@ -273,9 +273,9 @@ function Checkout() {
                         onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
                         className="inline-select"
                       >
-                        <option value="home">Home</option>
-                        <option value="work">Work</option>
-                        <option value="other">Other</option>
+                        <option value="home">{t("home")}</option>
+                        <option value="work">{t("work")}</option>
+                        <option value="other">{t("other")}</option>
                       </select>
                       <label className="inline-checkbox">
                         <input
@@ -283,12 +283,12 @@ function Checkout() {
                           checked={newAddress.is_default}
                           onChange={(e) => setNewAddress({ ...newAddress, is_default: e.target.checked })}
                         />
-                        Set as default
+                        {t("set_default")}
                       </label>
                     </div>
                     <input
                       type="text"
-                      placeholder="Street address *"
+                      placeholder={t("street_address")}
                       value={newAddress.street}
                       onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                       className="checkout-input"
@@ -296,14 +296,14 @@ function Checkout() {
                     <div className="inline-form-row">
                       <input
                         type="text"
-                        placeholder="City *"
+                        placeholder={t("city")}
                         value={newAddress.city}
                         onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                         className="checkout-input"
                       />
                       <input
                         type="text"
-                        placeholder="State *"
+                        placeholder={t("state")}
                         value={newAddress.state}
                         onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })}
                         className="checkout-input"
@@ -311,7 +311,7 @@ function Checkout() {
                     </div>
                     <input
                       type="text"
-                      placeholder="Pincode *"
+                      placeholder={t("pincode")}
                       value={newAddress.pincode}
                       onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
                       className="checkout-input"
@@ -321,15 +321,15 @@ function Checkout() {
                       onClick={handleSaveNewAddress}
                       disabled={savingAddress}
                     >
-                      {savingAddress ? "Saving..." : "Save & Use This Address"}
+                      {savingAddress ? t("saving") : t("save_use_address")}
                     </button>
 
                     <div className="or-divider">
-                      <span>or enter manually</span>
+                      <span>{t("or_enter_manually")}</span>
                     </div>
 
                     <textarea
-                      placeholder="Type full delivery address..."
+                      placeholder={t("type_full_address")}
                       value={manualAddress}
                       onChange={(e) => setManualAddress(e.target.value)}
                       rows="3"
@@ -350,7 +350,7 @@ function Checkout() {
           <div className="checkout-card">
             <div className="card-header">
               <i className='bx bx-cart'></i>
-              <h4>Order Summary</h4>
+              <h4>{t("order_summary")}</h4>
             </div>
 
             {cart.items.map(item => (
@@ -361,17 +361,17 @@ function Checkout() {
             ))}
 
             <div className="price-row">
-              <span>Subtotal</span>
+              <span>{t("subtotal")}</span>
               <span>₹ {totalAmount.toFixed(2)}</span>
             </div>
 
             <div className="price-row">
-              <span>Delivery</span>
+              <span>{t("delivery")}</span>
               <span>₹ {deliveryCharge}</span>
             </div>
 
             <div className="price-total">
-              <span>Total</span>
+              <span>{t("total")}</span>
               <span>₹ {total.toFixed(2)}</span>
             </div>
           </div>
@@ -380,7 +380,7 @@ function Checkout() {
           <div className="checkout-card">
             <div className="card-header">
               <i className='bx bx-credit-card'></i>
-              <h4>Payment Method</h4>
+              <h4>{t("payment_method")}</h4>
             </div>
 
             <div className="payment-option">
@@ -391,7 +391,7 @@ function Checkout() {
                   checked={paymentMethod === "cod"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
-                Cash on Delivery
+                {t("cash_delivery")}
               </label>
             </div>
 
@@ -419,7 +419,7 @@ function Checkout() {
           disabled={appSettings.maintenance_mode}
           style={appSettings.maintenance_mode ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
         >
-          {appSettings.maintenance_mode ? "Store Under Maintenance" : `Place Order ₹ ${total.toFixed(2)}`}
+          {appSettings.maintenance_mode ? t("store_maintenance") : `${t("place_order")} ₹ ${total.toFixed(2)}`}
         </button>
       </div>
 

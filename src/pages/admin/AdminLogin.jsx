@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/adminService";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function AdminLogin() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [error, setError] = useState("");
@@ -18,7 +20,7 @@ function AdminLogin() {
     e.preventDefault();
     
     if (!formData.identifier || !formData.password) {
-      setError("Please enter email/phone and password");
+      setError(t("enter_email_or_phone") + " / " + t("enter_password"));
       return;
     }
 
@@ -29,7 +31,7 @@ function AdminLogin() {
       await adminService.login(formData.identifier, formData.password);
       navigate("/admin/dashboard");
     } catch (err) {
-      setError(err.message || "Login failed");
+      setError(err.message || t("login_failed") || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -41,19 +43,19 @@ function AdminLogin() {
         <div className="admin-login-card">
           <div className="admin-login-header">
             <i className='bx bx-shield'></i>
-            <h2>Admin Login</h2>
-            <p>Access the admin panel</p>
+            <h2>{t("admin_login")}</h2>
+            <p>{t("access_admin_panel")}</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Email or Phone Number</label>
+              <label>{t("email_or_phone")}</label>
               <div className="input-with-icon">
                 <i className='bx bx-user'></i>
                 <input
                   type="text"
                   name="identifier"
-                  placeholder="admin@example.com or +919876543210"
+                  placeholder={t("enter_email_or_phone")}
                   value={formData.identifier}
                   onChange={handleChange}
                   autoComplete="username"
@@ -62,13 +64,13 @@ function AdminLogin() {
             </div>
 
             <div className="form-group">
-              <label>Password</label>
+              <label>{t("password")}</label>
               <div className="input-with-icon">
                 <i className='bx bx-lock'></i>
                 <input
                   type="password"
                   name="password"
-                  placeholder="Enter your password"
+                  placeholder={t("enter_password")}
                   value={formData.password}
                   onChange={handleChange}
                   autoComplete="current-password"
@@ -79,14 +81,14 @@ function AdminLogin() {
             {error && <div className="error-message">{error}</div>}
 
             <button type="submit" className="admin-login-btn" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading ? t("logging_in") : t("login")}
             </button>
           </form>
 
           <div className="admin-login-footer">
             <a href="/" className="back-to-store">
               <i className='bx bx-arrow-back'></i>
-              Back to Store
+              {t("back_to_store")}
             </a>
           </div>
         </div>

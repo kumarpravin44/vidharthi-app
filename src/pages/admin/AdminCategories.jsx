@@ -4,10 +4,12 @@ import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function AdminCategories() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -151,7 +153,7 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return <Loader text="Loading categories..." />;
+    return <Loader text={t("loading_categories")} />;
   }
 
   // Separate parent categories and their children
@@ -163,16 +165,16 @@ function AdminCategories() {
       <div className="admin-content">
         <div className="admin-page-header">
           <div>
-            <h1>Categories</h1>
-            <p>Manage parent categories and sub-categories</p>
+            <h1>{t("categories")}</h1>
+            <p>{t("manage_parent_categories")}</p>
           </div>
           <button className="admin-primary-btn" onClick={() => handleAdd()}>
-            <i className="bx bx-plus"></i> Add Category
+            <i className="bx bx-plus"></i> {t("add_category")}
           </button>
         </div>
 
         {topLevel.length === 0 ? (
-          <p style={{ textAlign: "center", padding: "40px" }}>No categories yet. Click "Add Category" to create one.</p>
+          <p style={{ textAlign: "center", padding: "40px" }}>{t("no_categories_prompt")}</p>
         ) : (
           <div className="cat-tree">
             {topLevel.map((parent) => {
@@ -202,12 +204,12 @@ function AdminCategories() {
                       </div>
                     </div>
                     <div className="cat-row-actions">
-                      <button className="cat-action-btn" title="Add subcategory" onClick={() => handleAdd(parent.id)}>
+                      <button className="cat-action-btn" title={t("add_subcategory")} onClick={() => handleAdd(parent.id)}>
                         <i className="bx bx-subdirectory-right"></i>
                       </button>
                       <button
                         className={`cat-action-btn ${parent.is_active ? "cat-btn-disable" : "cat-btn-enable"}`}
-                        title={parent.is_active ? "Disable" : "Enable"}
+                        title={parent.is_active ? t("disable") : t("enable") }
                         onClick={() => handleToggleStatus(parent.id)}
                       >
                         <i className={`bx ${parent.is_active ? "bx-block" : "bx-check-circle"}`}></i>

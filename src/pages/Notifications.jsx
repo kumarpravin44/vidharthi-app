@@ -4,6 +4,7 @@ import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 const NOTIFICATION_CONFIG = {
@@ -30,6 +31,7 @@ function Notifications() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { notifications, unreadCount, loading, markAsRead, markAllRead, fetchNotifications } = useNotifications();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -43,10 +45,10 @@ function Notifications() {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return "Just now";
-    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    if (diff < 172800) return "Yesterday";
+    if (diff < 60) return t("just_now");
+    if (diff < 3600) return `${Math.floor(diff / 60)} ${t("min_ago")}`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}${t("h_ago")}`;
+    if (diff < 172800) return t("yesterday");
     return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
   };
 
@@ -56,17 +58,17 @@ function Notifications() {
     const yesterdayStart = new Date(todayStart);
     yesterdayStart.setDate(yesterdayStart.getDate() - 1);
 
-    const groups = { Today: [], Yesterday: [], Earlier: [] };
+    const groups = { [t("today")]: [], [t("yesterday")]: [], [t("earlier")]: [] };
 
     notifications.forEach((n) => {
       const date = new Date(n.created_at);
-      if (date >= todayStart) groups.Today.push(n);
-      else if (date >= yesterdayStart) groups.Yesterday.push(n);
-      else groups.Earlier.push(n);
+      if (date >= todayStart) groups[t("today")].push(n);
+      else if (date >= yesterdayStart) groups[t("yesterday")].push(n);
+      else groups[t("earlier")].push(n);
     });
 
     return Object.entries(groups).filter(([, items]) => items.length > 0);
-  }, [notifications]);
+  }, [notifications, t]);
 
   const handleNotifClick = (notif) => {
     if (!notif.is_read) markAsRead(notif.id);
@@ -78,7 +80,7 @@ function Notifications() {
 
   return (
     <>
-      <InternalHeader title="Notifications" />
+      <InternalHeader title={t("notifications")} />
 
       <div className="content">
         {/* Header bar with count & mark all read */}
@@ -86,12 +88,12 @@ function Notifications() {
           <div className="notif-header-bar">
             <span className="notif-count">
               {unreadCount > 0
-                ? `${unreadCount} unread`
-                : `${notifications.length} notifications`}
+                ? `${unreadCount} ${t("unread")}`
+                : `${notifications.length} ${t("notifications_count")}`}
             </span>
             {unreadCount > 0 && (
               <button className="mark-all-btn" onClick={markAllRead}>
-                <i className="bx bx-check-double"></i> Mark all read
+                <i className="bx bx-check-double"></i> {t("mark_all_read")}
               </button>
             )}
           </div>
@@ -101,7 +103,7 @@ function Notifications() {
         {loading && (
           <div className="notif-empty">
             <div className="notif-loading-spinner"></div>
-            <p>Loading notifications...</p>
+            <p>{t("loading_notifications")}</p>
           </div>
         )}
 
@@ -111,9 +113,9 @@ function Notifications() {
             <div className="notif-empty-icon-wrap">
               <i className="bx bx-bell-off notif-empty-icon"></i>
             </div>
-            <h3 className="notif-empty-title">No Notifications</h3>
+            <h3 className="notif-empty-title">{t("no_notifications")}</h3>
             <p className="notif-empty-subtitle">
-              You're all caught up! We'll notify you when there's something new.
+              {t("no_notifications_subtitle")}
             </p>
           </div>
         )}
@@ -150,7 +152,7 @@ function Notifications() {
                       <p className="notif-message">{notif.body}</p>
                       {notif.order_id && (
                         <span className="notif-order-link">
-                          <i className="bx bx-link-external"></i> View Order
+                          <i className="bx bx-link-external"></i> {t("view_order")}
                         </span>
                       )}
                     </div>

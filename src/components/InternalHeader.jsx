@@ -2,11 +2,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useNotifications } from "../context/NotificationContext";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function InternalHeader({ title, showSearch = false }) {
 
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchActive, setSearchActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const { isAuthenticated } = useAuth();
@@ -62,7 +64,7 @@ function InternalHeader({ title, showSearch = false }) {
 
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t("search_placeholder")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyPress={handleKeyPress}
