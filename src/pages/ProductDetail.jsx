@@ -7,9 +7,9 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
+import { useTranslation } from "react-i18next"; // 👈 ADD
 import "boxicons/css/boxicons.min.css";
-
-import saltImg from "../images/product/salt.webp";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -17,6 +17,8 @@ function ProductDetail() {
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+  const { getLocalizedName, getLocalizedDescription } = useLanguage();
+  const { t } = useTranslation(); // 👈 ADD
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,62 +37,58 @@ function ProductDetail() {
       setProduct(data);
     } catch (error) {
       console.error('Failed to load product:', error);
-      showPopup("Failed to load product", "error");
+      showPopup(t("product_load_failed"), "error");
     } finally {
       setLoading(false);
     }
   };
 
   const increaseQty = () => setQty(qty + 1);
-  
-  const decreaseQty = () => {
-    if (qty > 1) setQty(qty - 1);
+  const decreaseQty = () => qty > 1 && setQty(qty - 1);
+
+  const showPopup = (msg, type = "success") => {
+    setPopupType(type);
+    setPopupMessage(msg);
+    setTimeout(() => setPopupMessage(""), 1200);
   };
 
-  // Wishlist Toggle
+  // Wishlist
   const handleWishlist = async () => {
     if (!isAuthenticated) {
-      showPopup("Please login to add to wishlist", "error");
+      showPopup(t("login_wishlist"), "error");
       setTimeout(() => navigate("/login"), 1500);
       return;
     }
+
     try {
       const result = await toggleWishlist(product.id);
-      if (result.wishlisted) {
-        showPopup("Added to wishlist ❤️", "success");
-      } else {
-        showPopup("Removed from wishlist", "success");
-      }
+      showPopup(result.wishlisted ? t("added_wishlist") : t("removed_wishlist"));
     } catch (err) {
-      showPopup(err.message || "Failed to update wishlist", "error");
+      showPopup(err.message || t("wishlist_failed"), "error");
     }
   };
 
-  const showPopup = (message, type = "success") => {
-    setPopupType(type);
-    setPopupMessage(message);
-    setTimeout(() => setPopupMessage(""), 1000);
-  };
-
+  // Add to Cart
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      showPopup("Please login to add items to cart", "error");
-      setTimeout(() => navigate("/login"), 2000);
+      showPopup(t("login_cart"), "error");
+      setTimeout(() => navigate("/login"), 1500);
       return;
     }
 
     try {
       await addItem(product.id, qty, product);
-      showPopup("Added to cart 🛒", "success");
+      showPopup(t("added_cart"));
     } catch (error) {
-      showPopup(error.message || "Failed to add to cart", "error");
+      showPopup(error.message || t("cart_failed"), "error");
     }
   };
 
+  // Buy Now
   const handleBuyNow = async () => {
     if (!isAuthenticated) {
-      showPopup("Please login to continue", "error");
-      setTimeout(() => navigate("/login"), 2000);
+      showPopup(t("login_continue"), "error");
+      setTimeout(() => navigate("/login"), 1500);
       return;
     }
 
@@ -98,28 +96,30 @@ function ProductDetail() {
       await addItem(product.id, qty, product);
       navigate("/checkout");
     } catch (error) {
-      showPopup(error.message || "Failed to proceed", "error");
+      showPopup(error.message || t("buy_failed"), "error");
     }
   };
 
+  // Loading
   if (loading) {
     return (
       <>
-        <InternalHeader title="" showSearch />
-        <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
-          <p>Loading product...</p>
+        <InternalHeader title={t("product_details")} showSearch />
+        <div className="content" style={{ textAlign: "center", padding: "20px" }}>
+          <p>{t("loading_product")}</p>
         </div>
         <BottomNav />
       </>
     );
   }
 
+  // Not Found
   if (!product) {
     return (
       <>
-        <InternalHeader title="" showSearch />
-        <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
-          <p>Product not found</p>
+        <InternalHeader title={t("product_details")} showSearch />
+        <div className="content" style={{ textAlign: "center", padding: "20px" }}>
+          <p>{t("product_not_found")}</p>
         </div>
         <BottomNav />
       </>
@@ -128,47 +128,42 @@ function ProductDetail() {
 
   return (
     <>
-      <InternalHeader title="Product Details" showSearch />
+      <InternalHeader title={t("product_details")} showSearch />
 
       <div className="product-detail-page content">
 
-        {/* Image Section */}
+        {/* Image */}
         <div className="product-image-section">
-          <img 
-            src={getImageWithFallback(product.image_url)} 
+          <img
+            src={getImageWithFallback(product.image_url)}
             alt={product.name}
             onError={(e) => e.target.src = noImagePlaceholder}
           />
 
-          <div
-            className="wishlist-toggle"
-            onClick={handleWishlist}
-          >
-            <i
-              className={`bx ${
-                product && isWishlisted(product.id) ? "bxs-heart" : "bx-heart"
-              }`}
-            ></i>
+          <div className="wishlist-toggle" onClick={handleWishlist}>
+            <i className={`bx ${isWishlisted(product.id) ? "bxs-heart" : "bx-heart"}`}></i>
           </div>
-          
-          {product.mrp && product.mrp > product.price && (
+
+          {product.mrp > product.price && (
             <span className="discount-badge">
               {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
             </span>
           )}
         </div>
 
-        {/* Info Section */}
+        {/* Info */}
         <div className="product-info-card">
 
-          <h2>{product.name}</h2>
+          <h2>{getLocalizedName(product)}</h2>
+
           <p className="product-price">
-            <span>₹ {product.price}</span> 
-            {product.mrp && product.mrp > product.price && (
+            <span>₹ {product.price}</span>
+            {product.mrp > product.price && (
               <span className="old-price">₹ {product.mrp}</span>
             )}
           </p>
 
+          {/* Quantity */}
           {product.stock > 0 && (
             <div className="qty-controls detail-qty">
               <button onClick={decreaseQty}>-</button>
@@ -177,53 +172,44 @@ function ProductDetail() {
             </div>
           )}
 
+          {/* Stock */}
           {product.stock !== undefined && (
-            <p className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-              {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+            <p className={`stock-status ${product.stock > 0 ? "in-stock" : "out-of-stock"}`}>
+              {product.stock > 0
+                ? `${t("in_stock")}`
+                : t("out_of_stock")}
             </p>
           )}
-         
+
+          {/* Description */}
           {product.description && (
             <p className="product-description">
-              {product.description}
+              {getLocalizedDescription(product)}
             </p>
           )}
-
-          
-
-          
 
         </div>
 
       </div>
 
-      {/* Sticky Bottom Buttons */}
+      {/* Bottom Buttons */}
       {product.stock > 0 && (
         <div className="product-action-bar">
-          <button
-            className="add-cart-btn"
-            onClick={handleAddToCart}
-          >
-            Add to Cart
+          <button className="add-cart-btn" onClick={handleAddToCart}>
+            {t("add_to_cart")}
           </button>
 
           <button className="buy-now-btn" onClick={handleBuyNow}>
-            Buy Now
+            {t("buy_now")}
           </button>
         </div>
       )}
 
-      {/* Modal Popup */}
+      {/* Popup */}
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i
-              className={`bx ${
-                popupType === "success"
-                  ? "bx-check-circle success-icon"
-                  : "bx-error error-icon"
-              }`}
-            ></i>
+            <i className={`bx ${popupType === "success" ? "bx-check-circle" : "bx-error"}`}></i>
             <h3>{popupMessage}</h3>
           </div>
         </div>

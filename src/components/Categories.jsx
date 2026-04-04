@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
 import Loader from "../components/Loader";
-import { useTranslation } from "react-i18next"; // 👈 ADD
+import { useLanguage } from "../context/LanguageContext";
 
 import saltImg from "../images/product/salt.webp";
 import drinksImg from "../images/product/drinks.webp";
@@ -13,7 +13,7 @@ import dryfruitsImg from "../images/product/dryfruits.webp";
 function Categories({ parentCategoryId = null, categories = null }) {
   const [localCategories, setLocalCategories] = useState(categories || []);
   const [loading, setLoading] = useState(!categories);
-  const { t } = useTranslation(); // 👈 ADD
+  const { t, getLocalizedName } = useLanguage();
 
   const defaultImages = {
     0: saltImg,
@@ -78,7 +78,7 @@ function Categories({ parentCategoryId = null, categories = null }) {
 
             {/* 👇 IMPORTANT */}
             <p>
-              {t(`category.${category.name}`, category.name)}
+              {getLocalizedName(category)}
             </p>
 
           </div>

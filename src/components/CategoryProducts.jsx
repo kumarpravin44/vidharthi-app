@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
@@ -14,6 +15,7 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
   const [popupType, setPopupType] = useState("success");
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+  const { getLocalizedName } = useLanguage();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,7 +132,7 @@ function CategoryProducts({ categoryId, categoryName, limit=1000 }) {
             onError={(e) => e.target.src = noImagePlaceholder}
           />
 
-          <h4>{product.name}</h4>
+          <h4>{getLocalizedName(product)}</h4>
 
           <div className="price-section">
             <span className="new-price">₹ {product.price}</span>

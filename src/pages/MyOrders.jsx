@@ -5,12 +5,15 @@ import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function MyOrders() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
+  const { getLocalizedName, t } = useLanguage();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(null);
@@ -18,7 +21,6 @@ function MyOrders() {
   const [popupType, setPopupType] = useState("success");
 
   useEffect(() => {
-    console.log('MyOrders component mounted');
     if (!isAuthenticated) {
       navigate("/login");
       return;
@@ -30,10 +32,9 @@ function MyOrders() {
     setLoading(true);
     try {
       const data = await orderService.getOrders();
-      console.log('Orders loaded:', data);
       setOrders(data);
     } catch (error) {
-      console.error('Failed to load orders:', error);
+      console.error("Failed to load orders:", error);
     } finally {
       setLoading(false);
     }
@@ -41,10 +42,10 @@ function MyOrders() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
     });
   };
 
@@ -55,27 +56,21 @@ function MyOrders() {
   };
 
   const handleRepeatOrder = async (order) => {
-    console.log('Repeat order clicked:', order);
-    
     if (!order.items || order.items.length === 0) {
-      console.log('No items in order');
-      showPopup("No items found in this order", "error");
+      showPopup(t("no_items"), "error");
       return;
     }
 
-    console.log('Order items:', order.items);
     setReordering(order.id);
-    
+
     try {
       for (const item of order.items) {
-        console.log('Adding item to cart:', item);
         await addItem(item.product_id, item.quantity);
       }
-      showPopup("Items added to cart! 🛒", "success");
+      showPopup(t("added_to_cart"), "success");
       setTimeout(() => navigate("/cart"), 1500);
     } catch (error) {
-      console.error('Error repeating order:', error);
-      showPopup(error.message || "Failed to add some items", "error");
+      showPopup(error.message || t("error_add_cart"), "error");
     } finally {
       setReordering(null);
     }
@@ -83,22 +78,24 @@ function MyOrders() {
 
   const getStatusClass = (status) => {
     const statusMap = {
-      'placed': 'pending',
-      'confirmed': 'confirmed',
-      'packed': 'processing',
-      'out_for_delivery': 'shipped',
-      'delivered': 'delivered',
-      'cancelled': 'cancelled'
+      placed: "pending",
+      confirmed: "confirmed",
+      packed: "processing",
+      out_for_delivery: "shipped",
+      delivered: "delivered",
+      cancelled: "cancelled"
     };
-    return statusMap[status.toLowerCase()] || 'pending';
+    return statusMap[status.toLowerCase()] || "pending";
   };
 
   if (loading) {
     return (
       <>
-        <InternalHeader title="My Orders" />
+        <InternalHeader title={t("my_orders")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading orders...</p>
+          <p style={{ textAlign: "center", padding: "20px" }}>
+            {t("loading")}
+          </p>
         </div>
         <BottomNav />
       </>
@@ -107,20 +104,22 @@ function MyOrders() {
 
   return (
     <>
-      <InternalHeader title="My Orders" />
+      <InternalHeader title={t("my_orders")} />
+
       <div className="content">
         <div className="orders-page">
 
           {orders.length === 0 ? (
             <div className="empty-orders">
-              <i className='bx bx-package' style={{ fontSize: '64px', color: '#ccc' }}></i>
-              <p>No orders found</p>
-              <button 
-                className="primary-btn" 
-                style={{ marginTop: '20px' }}
+              <i className="bx bx-package" style={{ fontSize: "64px", color: "#ccc" }}></i>
+              <p>{t("no_orders")}</p>
+
+              <button
+                className="primary-btn"
+                style={{ marginTop: "20px" }}
                 onClick={() => navigate("/")}
               >
-                Start Shopping
+                {t("start_shopping")}
               </button>
             </div>
           ) : (
@@ -129,40 +128,44 @@ function MyOrders() {
 
                 <div className="order-header">
                   <div>
-                    <h4>Order #{order.id.substring(0, 8)}</h4>
+                    <h4>{t("order")} #{order.id.substring(0, 8)}</h4>
                     <p>{formatDate(order.created_at)}</p>
                   </div>
 
                   <span className={`status-badge ${getStatusClass(order.status)}`}>
-                    {order.status}
+                    {t(order.status.toLowerCase())}
                   </span>
                 </div>
 
                 <div className="order-items">
                   {order.items?.map((item, idx) => (
                     <span key={idx}>
-                      {item.product?.name || 'Product'} × {item.quantity}
-                      {idx < order.items.length - 1 && ', '}
+                      {getLocalizedName(item.product) || t("product")} × {item.quantity}
+                      {idx < order.items.length - 1 && ", "}
                     </span>
                   ))}
                 </div>
 
                 <div className="order-footer">
-                  <h4>Total: ₹ {order.total?.toFixed(2) || '0.00'}</h4>
+                  <h4>{t("total")}: ₹ {order.total?.toFixed(2) || "0.00"}</h4>
+
                   <div className="order-footer-btns">
                     <button
                       className="repeat-order-btn"
-                      onClick={(e) => { e.stopPropagation(); handleRepeatOrder(order); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRepeatOrder(order);
+                      }}
                       disabled={reordering === order.id}
                     >
-                      
-                      {reordering === order.id ? "Adding..." : "Repeat"}
+                      {reordering === order.id ? t("adding") : t("repeat")}
                     </button>
-                    <button 
+
+                    <button
                       className="view-btn"
                       onClick={() => navigate(`/order/${order.id}`)}
                     >
-                      View
+                      {t("view")}
                     </button>
                   </div>
                 </div>

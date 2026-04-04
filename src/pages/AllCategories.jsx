@@ -9,11 +9,13 @@ import riceImg from "../images/product/rice.webp";
 import drinksImg from "../images/product/drinks.webp";
 import dryfruitsImg from "../images/product/dryfruits.webp";
 import Loader from "../components/Loader";
+import { useLanguage } from "../context/LanguageContext";
 
 function AllCategories() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { getLocalizedName, getLocalizedDescription } = useLanguage();
 
   const defaultImages = {
     0: saltImg,
@@ -57,8 +59,8 @@ function AllCategories() {
                   alt={cat.name} 
                 />
                 <div className="category-info">
-                  <h4>{cat.name}</h4>
-                  {cat.description && <p>{cat.description}</p>}
+                  <h4>{getLocalizedName(cat)}</h4>
+                  {cat.description && <p>{getLocalizedDescription(cat)}</p>}
                 </div>
                 <i className='bx bx-chevron-right'></i>
               </div>

@@ -6,18 +6,18 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigation } from "../context/NavigationContext";
 import { productService } from '../services/productService';
 import { getAvatarUrl } from '../utils/placeholderImage';
+import { useTranslation } from "react-i18next";
 import "boxicons/css/boxicons.min.css";
 
 function MyAccount() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { refreshNavCategories } = useNavigation();
+  const { t } = useTranslation();
 
   const [refreshing, setRefreshing] = useState(false);
-
-  // ✅ Popup states (same as SlideMenu)
   const [showConfirm, setShowConfirm] = useState(false);
-  const [confirmType, setConfirmType] = useState(""); // logout / refresh
+  const [confirmType, setConfirmType] = useState("");
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");
 
@@ -27,30 +27,25 @@ function MyAccount() {
     }
   }, [isAuthenticated, navigate]);
 
-  // 🔴 Logout Click
   const handleLogout = () => {
     setConfirmType("logout");
     setShowConfirm(true);
   };
 
-  // 🔄 Refresh Click
   const handleRefreshCache = () => {
     setConfirmType("refresh");
     setShowConfirm(true);
   };
 
-  // ✅ Confirm Action
   const handleConfirm = async () => {
     setShowConfirm(false);
 
     if (confirmType === "logout") {
       logout();
-      setPopupMessage("Logged out successfully");
+      setPopupMessage(t("logout_success"));
       setPopupType("success");
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      setTimeout(() => navigate("/login"), 1500);
     }
 
     if (confirmType === "refresh") {
@@ -59,10 +54,10 @@ function MyAccount() {
         await refreshNavCategories();
         await productService.getCategoriesTree(true);
 
-        setPopupMessage("App data refreshed successfully");
+        setPopupMessage(t("refresh_success"));
         setPopupType("success");
-      } catch (error) {
-        setPopupMessage("Failed to refresh data");
+      } catch {
+        setPopupMessage(t("refresh_failed"));
         setPopupType("error");
       } finally {
         setRefreshing(false);
@@ -70,16 +65,14 @@ function MyAccount() {
     }
   };
 
-  const handleCancel = () => {
-    setShowConfirm(false);
-  };
+  const handleCancel = () => setShowConfirm(false);
 
   if (!user) {
     return (
       <>
-        <InternalHeader title="My Account" />
+        <InternalHeader title={t("my_account")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '20px' }}>Loading...</p>
+          <p style={{ textAlign: 'center', padding: '20px' }}>{t("loading")}</p>
         </div>
         <BottomNav />
       </>
@@ -88,12 +81,12 @@ function MyAccount() {
 
   return (
     <>
-      <InternalHeader title="My Account" />
+      <InternalHeader title={t("my_account")} />
 
       <div className="content">
         <div className="account-page">
 
-          {/* Profile Card */}
+          {/* Profile */}
           <div className="account-card profile-card">
             <div className="profile-left">
               <div className="profile-avatar">
@@ -116,56 +109,50 @@ function MyAccount() {
             </Link>
           </div>
 
-          {/* Account Options */}
+          {/* Options */}
           <div className="account-card">
 
             <Link to="/orders" className="account-item">
               <i className='bx bx-package'></i>
-              <span>My Orders</span>
+              <span>{t("my_orders")}</span>
               <i className='bx bx-chevron-right'></i>
             </Link>
 
             <Link to="/addresses" className="account-item">
               <i className='bx bx-map'></i>
-              <span>Saved Addresses</span>
+              <span>{t("saved_addresses")}</span>
               <i className='bx bx-chevron-right'></i>
             </Link>
 
             <Link to="/wishlist" className="account-item">
               <i className='bx bx-heart'></i>
-              <span>Wishlist</span>
+              <span>{t("wishlist")}</span>
               <i className='bx bx-chevron-right'></i>
             </Link>
 
             <Link to="/help" className="account-item">
               <i className='bx bx-help-circle'></i>
-              <span>Help & Support</span>
+              <span>{t("help_support")}</span>
               <i className='bx bx-chevron-right'></i>
             </Link>
 
           </div>
 
-          {/* Settings */}
+          {/* Refresh */}
           <div className="account-card">
-            <div
-              className="account-item"
-              onClick={handleRefreshCache}
-              style={{ cursor: 'pointer' }}
-            >
+            <div className="account-item" onClick={handleRefreshCache}>
               <i className={`bx ${refreshing ? 'bx-loader bx-spin' : 'bx-refresh'}`}></i>
-              <span>{refreshing ? 'Refreshing...' : 'Refresh App Data'}</span>
+              <span>
+                {refreshing ? t("refreshing") : t("refresh_app")}
+              </span>
             </div>
           </div>
 
           {/* Logout */}
           <div className="account-card">
-            <div
-              className="account-item logout"
-              onClick={handleLogout}
-              style={{ cursor: 'pointer' }}
-            >
+            <div className="account-item logout" onClick={handleLogout}>
               <i className='bx bx-log-out'></i>
-              <span>Logout</span>
+              <span>{t("logout")}</span>
             </div>
           </div>
 
@@ -174,50 +161,41 @@ function MyAccount() {
 
       <BottomNav />
 
-      {/* 🔥 Confirm Popup */}
+      {/* Confirm Popup */}
       {showConfirm && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i
-              className={`bx ${
-                confirmType === "logout" ? "bx-log-out" : "bx-refresh"
-              }`}
-              style={{ fontSize: "35px", color: "#ff4d4f" }}
-            ></i>
+
+            <i className={`bx ${confirmType === "logout" ? "bx-log-out" : "bx-refresh"}`}></i>
 
             <h3>
               {confirmType === "logout"
-                ? "Logout?"
-                : "Refresh App Data?"}
+                ? t("logout_confirm1")
+                : t("refresh_confirm")}
             </h3>
 
-            <p style={{ fontSize: "13px", color: "#777" }}>
+            <p>
               {confirmType === "logout"
-                ? "Are you sure you want to logout"
-                : "This will reload categories and cached data"}
+                ? t("logout_msg")
+                : t("refresh_msg")}
             </p>
 
-            <div style={{ marginTop: "15px"}}>
-              <button onClick={handleCancel}>Cancel</button>
-              <button style={{ marginLeft: "10px" }} onClick={handleConfirm}>
-                {confirmType === "logout" ? "Logout" : "Refresh"}
+            <div style={{ marginTop: "15px" }}>
+              <button onClick={handleCancel}>{t("cancel")}</button>
+              <button onClick={handleConfirm}>
+                {confirmType === "logout" ? t("logout") : t("refresh")}
               </button>
             </div>
+
           </div>
         </div>
       )}
 
-      {/* ✅ Success / Error Popup */}
+      {/* Popup */}
       {popupMessage && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <i
-              className={`bx ${
-                popupType === "success"
-                  ? "bx-check-circle success-icon"
-                  : "bx-error error-icon"
-              }`}
-            ></i>
+            <i className={`bx ${popupType === "success" ? "bx-check-circle" : "bx-error"}`}></i>
             <h3>{popupMessage}</h3>
           </div>
         </div>

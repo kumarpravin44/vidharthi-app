@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 import Loader from "../../components/Loader";
 
 function AdminDashboard() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ function AdminDashboard() {
   };
 
   if (loading) {
-    return <Loader text="Loading dashboard..." />;
+    return <Loader text={t("loading_dashboard")} />;
   }
 
   return (
@@ -52,8 +54,8 @@ function AdminDashboard() {
       <AdminHeader />
       <div className="admin-content">
         <div className="admin-page-header">
-          <h1>Dashboard</h1>
-          <p>Overview of your e-commerce store</p>
+          <h1>{t("dashboard")}</h1>
+          <p>{t("overview_store")}</p>
         </div>
 
         <div className="stats-grid">
@@ -63,7 +65,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.total_users || 0}</h3>
-              <p>Total Users</p>
+              <p>{t("total_users")}</p>
             </div>
           </div>
 
@@ -73,7 +75,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.total_products || 0}</h3>
-              <p>Total Products</p>
+              <p>{t("total_products")}</p>
             </div>
           </div>
 
@@ -83,7 +85,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.out_of_stock_products || 0}</h3>
-              <p>Out of Stock</p>
+              <p>{t("out_of_stock_products")}</p>
             </div>
           </div>
 
@@ -93,7 +95,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.total_orders || 0}</h3>
-              <p>Total Orders</p>
+              <p>{t("total_orders")}</p>
             </div>
           </div>
 
@@ -103,7 +105,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>₹{(stats.total_revenue || 0).toLocaleString()}</h3>
-              <p>Total Revenue</p>
+              <p>{t("total_revenue")}</p>
             </div>
           </div>
 
@@ -113,7 +115,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.pending_orders || 0}</h3>
-              <p>Pending Orders</p>
+              <p>{t("pending_orders")}</p>
             </div>
           </div>
 
@@ -123,7 +125,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.delivered_orders || 0}</h3>
-              <p>Delivered Orders</p>
+              <p>{t("delivered_orders")}</p>
             </div>
           </div>
 
@@ -133,7 +135,7 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.cancelled_orders || 0}</h3>
-              <p>Cancelled Orders</p>
+              <p>{t("cancelled_orders")}</p>
             </div>
           </div>
 
@@ -143,29 +145,29 @@ function AdminDashboard() {
             </div>
             <div className="stat-info">
               <h3>{stats.active_users || 0}</h3>
-              <p>Active Users</p>
+              <p>{t("active_users")}</p>
             </div>
           </div>
         </div>
 
         <div className="quick-actions">
-          <h2>Quick Actions</h2>
+          <h2>{t("quick_actions")}</h2>
           <div className="action-buttons">
             <button className="action-btn" onClick={() => navigate("/admin/products")}>
               <i className='bx bx-plus-circle'></i>
-              <span>Add Product</span>
+              <span>{t("add_product")}</span>
             </button>
             <button className="action-btn" onClick={() => navigate("/admin/orders")}>
               <i className='bx bx-list-ul'></i>
-              <span>View Orders</span>
+              <span>{t("view_orders")}</span>
             </button>
             <button className="action-btn" onClick={() => navigate("/admin/categories")}>
               <i className='bx bx-category'></i>
-              <span>Manage Categories</span>
+              <span>{t("manage_categories")}</span>
             </button>
             <button className="action-btn" onClick={() => navigate("/admin/users")}>
               <i className='bx bx-group'></i>
-              <span>View Users</span>
+              <span>{t("view_users")}</span>
             </button>
           </div>
         </div>

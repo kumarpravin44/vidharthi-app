@@ -1,17 +1,12 @@
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../context/LanguageContext";
 
 function LanguageToggle() {
-  const { i18n } = useTranslation();
-
-  const toggleLanguage = () => {
-    const newLang = i18n.language === "en" ? "hi" : "en";
-    i18n.changeLanguage(newLang);
-  };
+  const { language, toggleLanguage } = useLanguage();
 
   return (
     <div className="lang-float" onClick={toggleLanguage}>
       <i className="bx bx-globe"></i>
-      <span>{i18n.language === "en" ? "HI" : "EN"}</span>
+      <span>{language === "en" ? "HI" : "EN"}</span>
     </div>
   );
 }

@@ -1,28 +1,30 @@
 import { useState } from "react";
 import InternalHeader from "../components/InternalHeader";
 import BottomNav from "../components/BottomNav";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function HelpSupport() {
 
+  const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(null);
 
   const faqs = [
     {
-      question: "How can I track my order?",
-      answer: "Go to My Orders section and click on View Details to track your order."
+      question: t("faq_q1"),
+      answer: t("faq_a1")
     },
     {
-      question: "How can I cancel my order?",
-      answer: "Orders can be cancelled before they are shipped from My Orders page."
+      question: t("faq_q2"),
+      answer: t("faq_a2")
     },
     {
-      question: "How do I change my address?",
-      answer: "You can update your address from Saved Addresses section."
+      question: t("faq_q3"),
+      answer: t("faq_a3")
     },
     {
-      question: "How do I contact customer support?",
-      answer: "You can call us or email us using the options below."
+      question: t("faq_q4"),
+      answer: t("faq_a4")
     }
   ];
 
@@ -32,13 +34,15 @@ function HelpSupport() {
 
   return (
     <>
-      <InternalHeader title="Help & Support" />
+      <InternalHeader title={t("help_support")} />
 
       <div className="help-page page-container content">
 
-        {/* 📌 FAQ Section */}
+        {/* FAQ */}
         <div className="help-card">
-          <h3 className="section-heading">Frequently Asked Questions</h3>
+          <h3 className="section-heading">
+            {t("faq_heading")}
+          </h3>
 
           {faqs.map((faq, index) => (
             <div className="faq-item" key={index}>
@@ -47,7 +51,11 @@ function HelpSupport() {
                 onClick={() => toggleFAQ(index)}
               >
                 <span>{faq.question}</span>
-                <i className={`bx ${activeIndex === index ? "bx-chevron-up" : "bx-chevron-down"}`}></i>
+                <i className={`bx ${
+                  activeIndex === index
+                    ? "bx-chevron-up"
+                    : "bx-chevron-down"
+                }`}></i>
               </div>
 
               {activeIndex === index && (
@@ -60,22 +68,25 @@ function HelpSupport() {
 
         </div>
 
-        {/* 📞 Contact Support */}
+        {/* Contact */}
         <div className="help-card">
-          <h3 className="section-heading">Contact Support</h3>
+          <h3 className="section-heading">
+            {t("contact_support")}
+          </h3>
 
           <div className="contact-item">
-            <i className='bx bx-phone'></i>
-            <span>+91 9876543210</span>
+            <i className="bx bx-phone"></i>
+            <span>{t("support_phone")}</span>
           </div>
 
           <div className="contact-item">
-            <i className='bx bx-envelope'></i>
-            <span>support@vidharthi.com</span>
+            <i className="bx bx-envelope"></i>
+            <span>{t("support_email")}</span>
           </div>
 
           <button className="chat-btn">
-            <i className='bx bx-chat'></i> Chat With Us
+            <i className="bx bx-chat"></i>
+            {t("chat_with_us")}
           </button>
         </div>
 

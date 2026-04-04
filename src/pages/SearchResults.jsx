@@ -7,6 +7,8 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 import "boxicons/css/boxicons.min.css";
 
 function SearchResults() {
@@ -16,6 +18,8 @@ function SearchResults() {
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+  const { getLocalizedName } = useLanguage();
+  const { t } = useTranslation();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +41,7 @@ function SearchResults() {
       setProducts(productsData);
     } catch (error) {
       console.error('Failed to load search results:', error);
-      showPopup("Failed to load search results", "error");
+      showPopup(t("failed_load_search"), "error");
     } finally {
       setLoading(false);
     }
@@ -80,16 +84,16 @@ function SearchResults() {
     e.stopPropagation();
     
     if (!isAuthenticated) {
-      showPopup("Please login to add items to cart", "error");
+      showPopup(t("please_login_cart"), "error");
       setTimeout(() => navigate("/login"), 2000);
       return;
     }
 
     try {
       await addItem(product.id, 1, product);
-      showPopup("Added to cart 🛒", "success");
+      showPopup(t("added_to_cart"), "success");
     } catch (error) {
-      showPopup(error.message || "Failed to add to cart", "error");
+      showPopup(error.message || t("failed_add_cart"), "error");
     }
   };
 
@@ -97,7 +101,7 @@ function SearchResults() {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      showPopup("Please login to add to wishlist", "error");
+      showPopup(t("please_login_wishlist"), "error");
       setTimeout(() => navigate("/login"), 2000);
       return;
     }
@@ -105,21 +109,21 @@ function SearchResults() {
     try {
       const result = await toggleWishlist(productId);
       if (result.wishlisted) {
-        showPopup("Added to wishlist ❤️", "success");
+        showPopup(t("added_to_wishlist"), "success");
       } else {
-        showPopup("Removed from wishlist", "success");
+        showPopup(t("removed_from_wishlist"), "success");
       }
     } catch (error) {
-      showPopup(error.message || "Failed to update wishlist", "error");
+      showPopup(error.message || t("failed_update_wishlist"), "error");
     }
   };
 
   if (loading) {
     return (
       <>
-        <InternalHeader title="Search Results" showSearch />
+        <InternalHeader title={t("search_results")} showSearch />
         <div className="content" style={{ padding: '20px', textAlign: 'center' }}>
-          <p>Searching for "{searchQuery}"...</p>
+          <p>{t("searching_for")} "{searchQuery}"...</p>
         </div>
         <BottomNav />
       </>
@@ -128,37 +132,37 @@ function SearchResults() {
 
   return (
     <>
-      <InternalHeader title={`Search: "${searchQuery}"`} showSearch />
+      <InternalHeader title={`${t("search_results")}: "${searchQuery}"`} showSearch />
 
       <div className="category-products-page content">
         {/* Filter + Sort Bar */}
         <div className="filter-sort-bar">
           <select value={filterBy} onChange={(e) => setFilterBy(e.target.value)}>
-            <option value="">Filter</option>
-            <option value="under50">Under ₹50</option>
-            <option value="above50">Above ₹50</option>
+            <option value="">{t("filter")}</option>
+            <option value="under50">{t("under_rupees")}</option>
+            <option value="above50">{t("above_rupees")}</option>
           </select>
 
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="">Sort By</option>
-            <option value="lowToHigh">Price: Low → High</option>
-            <option value="highToLow">Price: High → Low</option>
-            <option value="popular">Popular</option>
+            <option value="">{t("sort_by")}</option>
+            <option value="lowToHigh">{t("price_low_to_high")}</option>
+            <option value="highToLow">{t("price_high_to_low")}</option>
+            <option value="popular">{t("popular")}</option>
           </select>
         </div>
 
         {filteredProducts.length === 0 ? (
           <div className="empty-products">
             <i className='bx bx-search-alt'></i>
-            <p>No products found for "{searchQuery}"</p>
+            <p>{t("no_products_found")} "{searchQuery}"</p>
             <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-              Try different keywords or browse categories
+              {t("try_different_keywords")}
             </p>
           </div>
         ) : (
           <>
             <div className="search-result-count">
-              {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+              {filteredProducts.length} {filteredProducts.length === 1 ? t("products_found") : t("products_found_plural")} {t("found")}
             </div>
             <div className="products-grid">
               {filteredProducts.map(product => (
@@ -181,7 +185,7 @@ function SearchResults() {
                     onError={(e) => e.target.src = noImagePlaceholder}
                   />
 
-                  <h4>{product.name}</h4>
+                  <h4>{getLocalizedName(product)}</h4>
 
                   <div className="price-section">
                     <span className="new-price">₹ {product.price}</span>
@@ -192,12 +196,12 @@ function SearchResults() {
 
                   {product.mrp && product.mrp > product.price && (
                     <span className="discount-badge">
-                      {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                      {Math.round(((product.mrp - product.price) / product.mrp) * 100)}{t("percent_off")}
                     </span>
                   )}
 
                   {product.is_out_of_stock && (
-                    <div className="out-of-stock-badge">Out of Stock</div>
+                    <div className="out-of-stock-badge">{t("out_of_stock")}</div>
                   )}
 
                   <button
@@ -205,7 +209,7 @@ function SearchResults() {
                     onClick={(e) => handleAddToCart(e, product)}
                     disabled={product.is_out_of_stock}
                   >
-                    {product.is_out_of_stock ? 'Out of Stock' : 'Add to Cart'}
+                    {product.is_out_of_stock ? t("out_of_stock") : t("add_to_cart")}
                   </button>
 
                 </div>

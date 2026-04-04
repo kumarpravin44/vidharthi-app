@@ -8,6 +8,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { AppSettingsProvider } from "./context/AppSettingsContext";
 import { NavigationProvider } from "./context/NavigationContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import "./i18n";
 import "./style.css";
 
@@ -15,6 +16,7 @@ import "./style.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <LanguageProvider>
     <AppSettingsProvider>
       <AuthProvider>
         <LoaderProvider>
@@ -30,5 +32,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </LoaderProvider>
       </AuthProvider>
     </AppSettingsProvider>
+    </LanguageProvider>
   </React.StrictMode>
 );

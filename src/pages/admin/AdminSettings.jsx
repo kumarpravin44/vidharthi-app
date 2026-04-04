@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/AdminHeader";
 import { adminService } from "../../services/adminService";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 import "../../tier-styles.css";
 
 function AdminSettings() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("store");
@@ -63,7 +65,7 @@ function AdminSettings() {
       });
       setOrderStats(statsData);
     } catch (error) {
-      showPopup("Failed to load settings", "error");
+      showPopup(t("failed_load_settings"), "error");
     } finally {
       setLoading(false);
     }
@@ -108,9 +110,9 @@ function AdminSettings() {
       });
       const statsData = await adminService.getTodayOrdersCount();
       setOrderStats(statsData);
-      showPopup("Settings saved successfully!");
+      showPopup(t("settings_saved"));
     } catch (error) {
-      showPopup(error.message || "Failed to save settings", "error");
+      showPopup(error.message || t("failed_save_settings"), "error");
     } finally {
       setSaving(false);
     }
@@ -126,12 +128,12 @@ function AdminSettings() {
     const charge = parseFloat(tierForm.delivery_charge);
 
     if (isNaN(minPrice) || isNaN(charge) || (tierForm.max_price && isNaN(maxPrice))) {
-      showPopup("Please enter valid numbers", "error");
+      showPopup(t("enter_valid_numbers"), "error");
       return;
     }
 
     if (maxPrice !== null && maxPrice < minPrice) {
-      showPopup("Max price must be greater than min price", "error");
+      showPopup(t("max_price_greater"), "error");
       return;
     }
 
@@ -141,10 +143,10 @@ function AdminSettings() {
     if (editingTierIndex !== null) {
       updatedTiers[editingTierIndex] = newTier;
       setEditingTierIndex(null);
-      showPopup("Tier updated successfully!");
+      showPopup(t("tier_updated"));
     } else {
       updatedTiers.push(newTier);
-      showPopup("Tier added successfully!");
+      showPopup(t("tier_added"));
     }
 
     // Sort by min_price
@@ -168,19 +170,19 @@ function AdminSettings() {
     setSettings(prev => ({ ...prev, delivery_charge_tiers: updatedTiers }));
     setEditingTierIndex(null);
     setTierForm({ min_price: "", max_price: "", delivery_charge: "" });
-    showPopup("Tier deleted successfully!");
+    showPopup(t("tier_deleted"));
   };
 
   const tabs = [
-    { id: "store", icon: "bx-store", label: "Store Info" },
-    { id: "orders", icon: "bx-cart", label: "Order Limits" },
-    { id: "delivery", icon: "bx-car", label: "Delivery Charges" },
-    { id: "vegtime", icon: "bx-time-five", label: "Vegetable Orders" },
-    { id: "maintenance", icon: "bx-wrench", label: "Maintenance" },
+    { id: "store", icon: "bx-store", label: t("store_info") },
+    { id: "orders", icon: "bx-cart", label: t("order_limits") },
+    { id: "delivery", icon: "bx-car", label: t("delivery_charges") },
+    { id: "vegtime", icon: "bx-time-five", label: t("vegetable_orders") },
+    { id: "maintenance", icon: "bx-wrench", label: t("maintenance") },
   ];
 
   if (loading) {
-    return <Loader text="Loading settings..." />;
+    return <Loader text={t("loading_settings")} />;
   }
 
   return (
@@ -188,8 +190,8 @@ function AdminSettings() {
       <AdminHeader />
       <div className="admin-content">
         <div className="admin-page-header">
-          <h1><i className='bx bx-cog'></i> Settings</h1>
-          <p>Manage your store configuration</p>
+          <h1><i className='bx bx-cog'></i> {t("settings")}</h1>
+          <p>{t("manage_store_config")}</p>
         </div>
 
         <div className="settings-layout">
@@ -215,34 +217,34 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-store'></i>
                   <div>
-                    <h2>Store Information</h2>
-                    <p>Basic details about your store</p>
+                    <h2>{t("store_information")}</h2>
+                    <p>{t("basic_store_details")}</p>
                   </div>
                 </div>
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label>Store Name</label>
+                    <label>{t("store_name")}</label>
                     <input type="text" value={settings.store_name}
                       onChange={e => updateField("store_name", e.target.value)}
-                      placeholder="Your Store Name" />
+                      placeholder={t("store_name_placeholder")} />
                   </div>
                   <div className="form-group">
-                    <label>Phone Number</label>
+                    <label>{t("phone_number")}</label>
                     <input type="text" value={settings.store_phone}
                       onChange={e => updateField("store_phone", e.target.value)}
-                      placeholder="+91 98765 43210" />
+                      placeholder={t("phone_placeholder")} />
                   </div>
                   <div className="form-group">
-                    <label>Email Address</label>
+                    <label>{t("email_address")}</label>
                     <input type="email" value={settings.store_email}
                       onChange={e => updateField("store_email", e.target.value)}
-                      placeholder="store@example.com" />
+                      placeholder={t("email_placeholder")} />
                   </div>
                   <div className="form-group full-width">
-                    <label>Store Address</label>
+                    <label>{t("store_address")}</label>
                     <textarea value={settings.store_address}
                       onChange={e => updateField("store_address", e.target.value)}
-                      placeholder="Full store address..."
+                      placeholder={t("address_placeholder")}
                       rows="3" />
                   </div>
                 </div>
@@ -255,60 +257,60 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-cart'></i>
                   <div>
-                    <h2>Daily Order Limit</h2>
-                    <p>Control the maximum number of orders per day</p>
+                    <h2>{t("daily_order_limit")}</h2>
+                    <p>{t("control_max_orders")}</p>
                   </div>
                 </div>
 
                 {/* Live Stats */}
                 <div className="stats-banner">
                   <div className="stat-pill">
-                    <span className="stat-pill-label">Today</span>
+                    <span className="stat-pill-label">{t("today")}</span>
                     <span className="stat-pill-value">{orderStats.today_orders_count}</span>
                   </div>
                   <div className="stat-pill">
-                    <span className="stat-pill-label">Limit</span>
+                    <span className="stat-pill-label">{t("limit")}</span>
                     <span className="stat-pill-value">
                       {orderStats.daily_order_limit ?? "∞"}
                     </span>
                   </div>
                   <div className={`stat-pill ${orderStats.limit_reached ? "danger" : "success"}`}>
-                    <span className="stat-pill-label">Status</span>
+                    <span className="stat-pill-label">{t("status")}</span>
                     <span className="stat-pill-value">
                       {orderStats.order_limit_enabled
-                        ? orderStats.limit_reached ? "FULL" : "OK"
-                        : "OFF"}
+                        ? orderStats.limit_reached ? t("full") : t("ok")
+                        : t("off")}
                     </span>
                   </div>
                 </div>
 
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label>Enable Order Limit</label>
+                    <label>{t("enable_order_limit")}</label>
                     <div className="toggle-row">
                       <button className={`toggle-btn ${!settings.order_limit_enabled ? "active off" : ""}`}
                         onClick={() => updateField("order_limit_enabled", false)}>
-                        <i className='bx bx-x'></i> Off
+                        <i className='bx bx-x'></i> {t("off")}
                       </button>
                       <button className={`toggle-btn ${settings.order_limit_enabled ? "active on" : ""}`}
                         onClick={() => updateField("order_limit_enabled", true)}>
-                        <i className='bx bx-check'></i> On
+                        <i className='bx bx-check'></i> {t("on")}
                       </button>
                     </div>
                   </div>
                   <div className={`form-group ${!settings.order_limit_enabled ? "disabled" : ""}`}>
-                    <label>Max Orders Per Day</label>
+                    <label>{t("max_orders_per_day")}</label>
                     <input type="number" min="1"
                       value={settings.daily_order_limit ?? ""}
                       onChange={e => updateField("daily_order_limit", e.target.value)}
                       disabled={!settings.order_limit_enabled}
-                      placeholder="e.g. 50" />
+                      placeholder={t("orders_example")} />
                   </div>
                   <div className="form-group full-width">
-                    <label>Limit Reached Message</label>
+                    <label>{t("limit_reached_message")}</label>
                     <textarea value={settings.order_limit_message}
                       onChange={e => updateField("order_limit_message", e.target.value)}
-                      placeholder="Message shown to customers when limit is reached"
+                      placeholder={t("limit_message_placeholder")}
                       rows="3" maxLength="500" />
                     <span className="char-counter">{settings.order_limit_message.length}/500</span>
                   </div>
@@ -322,39 +324,39 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-car'></i>
                   <div>
-                    <h2>Delivery Charges by Order Amount</h2>
-                    <p>Set delivery charges based on order value</p>
+                    <h2>{t("delivery_charges_by_amount")}</h2>
+                    <p>{t("set_delivery_charges")}</p>
                   </div>
                 </div>
 
                 {/* Add/Edit Tier Form */}
                 <div className="tier-form-section">
-                  <h3>{editingTierIndex !== null ? "Edit Tier" : "Add New Tier"}</h3>
+                  <h3>{editingTierIndex !== null ? t("edit_tier") : t("add_new_tier")}</h3>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>Min Price (₹)</label>
+                      <label>{t("min_price_rupees")}</label>
                       <input type="number" min="0" step="0.01"
                         value={tierForm.min_price}
                         onChange={e => setTierForm({...tierForm, min_price: e.target.value})}
-                        placeholder="0" />
+                        placeholder={t("zero")} />
                     </div>
                     <div className="form-group">
-                      <label>Max Price (₹)</label>
+                      <label>{t("max_price_rupees")}</label>
                       <input type="number" min="0" step="0.01"
                         value={tierForm.max_price}
                         onChange={e => setTierForm({...tierForm, max_price: e.target.value})}
-                        placeholder="Leave empty for unlimited" />
+                        placeholder={t("leave_empty_unlimited")} />
                     </div>
                     <div className="form-group">
-                      <label>Delivery Charge (₹)</label>
+                      <label>{t("delivery_charge_rupees")}</label>
                       <input type="number" min="0" step="0.01"
                         value={tierForm.delivery_charge}
                         onChange={e => setTierForm({...tierForm, delivery_charge: e.target.value})}
-                        placeholder="0" />
+                        placeholder={t("zero")} />
                     </div>
                     <div className="form-group">
                       <button className="btn-primary" onClick={addOrUpdateTier}>
-                        {editingTierIndex !== null ? "Update" : "Add"}
+                        {editingTierIndex !== null ? t("update") : t("add")}
                       </button>
                     </div>
                   </div>
@@ -367,10 +369,10 @@ function AdminSettings() {
                     <table className="tier-table">
                       <thead>
                         <tr>
-                          <th>Min Price</th>
-                          <th>Max Price</th>
-                          <th>Delivery Charge</th>
-                          <th>Actions</th>
+                          <th>{t("min_price")}</th>
+                          <th>{t("max_price")}</th>
+                          <th>{t("delivery_charge")}</th>
+                          <th>{t("actions")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -381,10 +383,10 @@ function AdminSettings() {
                             <td>{tier.delivery_charge === 0 ? "FREE" : `₹${tier.delivery_charge.toFixed(2)}`}</td>
                             <td className="action-buttons">
                               <button className="btn-edit" onClick={() => editTier(index)}>
-                                <i className='bx bx-edit'></i> Edit
+                                <i className='bx bx-edit'></i> {t("edit")}
                               </button>
                               <button className="btn-delete" onClick={() => deleteTier(index)}>
-                                <i className='bx bx-trash'></i> Delete
+                                <i className='bx bx-trash'></i> {t("delete")}
                               </button>
                             </td>
                           </tr>
@@ -395,7 +397,7 @@ function AdminSettings() {
                 ) : (
                   <div className="empty-state">
                     <i className='bx bx-inbox'></i>
-                    <p>No delivery charge tiers configured yet. Add one to get started.</p>
+                    <p>{t("no_delivery_tiers")}</p>
                   </div>
                 )}
               </div>
@@ -407,45 +409,45 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-time-five'></i>
                   <div>
-                    <h2>Vegetable Order Window</h2>
-                    <p>Control when vegetable orders are accepted</p>
+                    <h2>{t("vegetable_order_window")}</h2>
+                    <p>{t("control_veg_orders")}</p>
                   </div>
                 </div>
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label>Enable Time Restriction</label>
+                    <label>{t("enable_time_restriction")}</label>
                     <div className="toggle-row">
                       <button className={`toggle-btn ${!settings.veg_order_enabled ? "active off" : ""}`}
                         onClick={() => updateField("veg_order_enabled", false)}>
-                        <i className='bx bx-x'></i> Off (Accept Anytime)
+                        <i className='bx bx-x'></i> {t("off_accept_anytime")}
                       </button>
                       <button className={`toggle-btn ${settings.veg_order_enabled ? "active on" : ""}`}
                         onClick={() => updateField("veg_order_enabled", true)}>
-                        <i className='bx bx-check'></i> On (Time Window)
+                        <i className='bx bx-check'></i> {t("on_time_window")}
                       </button>
                     </div>
                   </div>
                   <div className={`form-group ${!settings.veg_order_enabled ? "disabled" : ""}`}>
-                    <label>Start Hour</label>
+                    <label>{t("start_hour")}</label>
                     <input type="number" min="0" max="23"
                       value={settings.veg_order_start_hour}
                       onChange={e => updateField("veg_order_start_hour", e.target.value)}
                       disabled={!settings.veg_order_enabled} />
-                    <span className="form-hint">Orders open at this hour</span>
+                    <span className="form-hint">{t("orders_open_hour")}</span>
                   </div>
                   <div className={`form-group ${!settings.veg_order_enabled ? "disabled" : ""}`}>
-                    <label>End Hour</label>
+                    <label>{t("end_hour")}</label>
                     <input type="number" min="0" max="23"
                       value={settings.veg_order_end_hour}
                       onChange={e => updateField("veg_order_end_hour", e.target.value)}
                       disabled={!settings.veg_order_enabled} />
-                    <span className="form-hint">Orders close at this hour</span>
+                    <span className="form-hint">{t("orders_close_hour")}</span>
                   </div>
                 </div>
                 {settings.veg_order_enabled && (
                   <div className="info-banner">
                     <i className='bx bx-info-circle'></i>
-                    Vegetable orders will only be accepted between <strong>{settings.veg_order_start_hour}:00 AM</strong> and <strong>{settings.veg_order_end_hour}:00 AM</strong>.
+                    {t("veg_orders_accepted")} <strong>{settings.veg_order_start_hour}:00 {t("am")}</strong> {t("and")} <strong>{settings.veg_order_end_hour}:00 {t("am")}</strong>.
                   </div>
                 )}
               </div>
@@ -457,21 +459,21 @@ function AdminSettings() {
                 <div className="section-header">
                   <i className='bx bx-wrench'></i>
                   <div>
-                    <h2>Maintenance Mode</h2>
-                    <p>Temporarily disable ordering for all users</p>
+                    <h2>{t("maintenance_mode")}</h2>
+                    <p>{t("disable_ordering")}</p>
                   </div>
                 </div>
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label>Maintenance Mode</label>
+                    <label>{t("maintenance_mode")}</label>
                     <div className="toggle-row">
                       <button className={`toggle-btn ${!settings.maintenance_mode ? "active on" : ""}`}
                         onClick={() => updateField("maintenance_mode", false)}>
-                        <i className='bx bx-check'></i> Store Open
+                        <i className='bx bx-check'></i> {t("store_open")}
                       </button>
                       <button className={`toggle-btn ${settings.maintenance_mode ? "active danger" : ""}`}
                         onClick={() => updateField("maintenance_mode", true)}>
-                        <i className='bx bx-error'></i> Under Maintenance
+                        <i className='bx bx-error'></i> {t("under_maintenance")}
                       </button>
                     </div>
                   </div>
@@ -479,15 +481,15 @@ function AdminSettings() {
                     <div className="form-group full-width">
                       <div className="warning-banner">
                         <i className='bx bx-error-circle'></i>
-                        <strong>Store is currently in maintenance mode!</strong> No new orders can be placed.
+                      <strong>{t("store_maintenance_warning")}</strong>
                       </div>
                     </div>
                   )}
                   <div className="form-group full-width">
-                    <label>Maintenance Message</label>
+                    <label>{t("maintenance_message")}</label>
                     <textarea value={settings.maintenance_message}
                       onChange={e => updateField("maintenance_message", e.target.value)}
-                      placeholder="Message shown to customers during maintenance"
+                      placeholder={t("maintenance_placeholder")}
                       rows="3" maxLength="500" />
                     <span className="char-counter">{settings.maintenance_message.length}/500</span>
                   </div>
@@ -498,10 +500,10 @@ function AdminSettings() {
             {/* Save Bar */}
             <div className="save-bar">
               <button className="btn-reset" onClick={loadData} disabled={saving}>
-                <i className='bx bx-revision'></i> Reset
+                <i className='bx bx-revision'></i> {t("reset")}
               </button>
               <button className="btn-save" onClick={handleSave} disabled={saving}>
-                {saving ? <><i className='bx bx-loader-alt bx-spin'></i> Saving...</> : <><i className='bx bx-save'></i> Save Settings</>}
+                {saving ? <><i className='bx bx-loader-alt bx-spin'></i> {t("saving")}</> : <><i className='bx bx-save'></i> {t("save_settings")}</>}
               </button>
             </div>
           </div>

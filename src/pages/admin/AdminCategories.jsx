@@ -4,10 +4,12 @@ import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function AdminCategories() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -16,8 +18,10 @@ function AdminCategories() {
   const [expandedParents, setExpandedParents] = useState({});
   const [formData, setFormData] = useState({
     name: "",
+    name_hi: "",
     slug: "",
     description: "",
+    description_hi: "",
     image_url: "",
     parent_id: "",
     sort_order: 0,
@@ -52,8 +56,10 @@ function AdminCategories() {
     setEditingCategory(null);
     setFormData({
       name: "",
+      name_hi: "",
       slug: "",
       description: "",
+      description_hi: "",
       image_url: "",
       parent_id: parentId || "",
       sort_order: 0,
@@ -67,8 +73,10 @@ function AdminCategories() {
     setEditingCategory(category);
     setFormData({
       name: category.name,
+      name_hi: category.name_hi || "",
       slug: category.slug,
       description: category.description || "",
+      description_hi: category.description_hi || "",
       image_url: category.image_url || "",
       parent_id: category.parent_id || "",
       sort_order: category.sort_order ?? 0,
@@ -103,8 +111,10 @@ function AdminCategories() {
     e.preventDefault();
     const payload = {
       name: formData.name,
+      name_hi: formData.name_hi || "",
       slug: formData.slug,
       description: formData.description || null,
+      description_hi: formData.description_hi || "",
       image_url: formData.image_url || null,
       parent_id: formData.parent_id || null,
       sort_order: Number(formData.sort_order) || 0,
@@ -143,7 +153,7 @@ function AdminCategories() {
   };
 
   if (loading) {
-    return <Loader text="Loading categories..." />;
+    return <Loader text={t("loading_categories")} />;
   }
 
   // Separate parent categories and their children
@@ -155,16 +165,16 @@ function AdminCategories() {
       <div className="admin-content">
         <div className="admin-page-header">
           <div>
-            <h1>Categories</h1>
-            <p>Manage parent categories and sub-categories</p>
+            <h1>{t("categories")}</h1>
+            <p>{t("manage_parent_categories")}</p>
           </div>
           <button className="admin-primary-btn" onClick={() => handleAdd()}>
-            <i className="bx bx-plus"></i> Add Category
+            <i className="bx bx-plus"></i> {t("add_category")}
           </button>
         </div>
 
         {topLevel.length === 0 ? (
-          <p style={{ textAlign: "center", padding: "40px" }}>No categories yet. Click "Add Category" to create one.</p>
+          <p style={{ textAlign: "center", padding: "40px" }}>{t("no_categories_prompt")}</p>
         ) : (
           <div className="cat-tree">
             {topLevel.map((parent) => {
@@ -194,12 +204,12 @@ function AdminCategories() {
                       </div>
                     </div>
                     <div className="cat-row-actions">
-                      <button className="cat-action-btn" title="Add subcategory" onClick={() => handleAdd(parent.id)}>
+                      <button className="cat-action-btn" title={t("add_subcategory")} onClick={() => handleAdd(parent.id)}>
                         <i className="bx bx-subdirectory-right"></i>
                       </button>
                       <button
                         className={`cat-action-btn ${parent.is_active ? "cat-btn-disable" : "cat-btn-enable"}`}
-                        title={parent.is_active ? "Disable" : "Enable"}
+                        title={parent.is_active ? t("disable") : t("enable") }
                         onClick={() => handleToggleStatus(parent.id)}
                       >
                         <i className={`bx ${parent.is_active ? "bx-block" : "bx-check-circle"}`}></i>
@@ -284,6 +294,11 @@ function AdminCategories() {
               </div>
 
               <div className="form-group">
+                <label>Hindi Name (हिन्दी नाम)</label>
+                <input type="text" name="name_hi" value={formData.name_hi} onChange={handleChange} placeholder="श्रेणी का नाम हिन्दी में" />
+              </div>
+
+              <div className="form-group">
                 <label>Slug *</label>
                 <input
                   type="text"
@@ -307,6 +322,11 @@ function AdminCategories() {
               <div className="form-group">
                 <label>Description</label>
                 <textarea name="description" value={formData.description} onChange={handleChange} rows="2" placeholder="Brief description" />
+              </div>
+
+              <div className="form-group">
+                <label>Hindi Description (हिन्दी विवरण)</label>
+                <textarea name="description_hi" value={formData.description_hi} onChange={handleChange} rows="2" placeholder="श्रेणी का विवरण हिन्दी में" />
               </div>
 
               <ImageUpload

@@ -5,6 +5,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { getImageWithFallback, noImagePlaceholder } from "../utils/placeholderImage";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function Wishlist() {
@@ -12,6 +13,7 @@ function Wishlist() {
   const { isAuthenticated } = useAuth();
   const { items, loading, remove } = useWishlist();
   const { addItem } = useCart();
+  const { getLocalizedName } = useLanguage();
 
   if (!isAuthenticated) {
     return (
@@ -68,7 +70,7 @@ function Wishlist() {
                     onClick={() => navigate(`/product/${item.product_id}`)}
                     style={{ cursor: "pointer" }}
                   >
-                    {item.product?.name}
+                    {getLocalizedName(item.product)}
                   </h4>
                   <p>₹ {item.product?.price}</p>
 

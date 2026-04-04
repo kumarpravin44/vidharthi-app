@@ -5,11 +5,13 @@ import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import "boxicons/css/boxicons.min.css";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 
 import saltImg from "../../images/product/salt.webp";
 
 function AdminProducts() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,9 @@ function AdminProducts() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [formData, setFormData] = useState({
     name: "",
+    name_hi: "",
     description: "",
+    description_hi: "",
     price: "",
     mrp: "",
     stock: "",
@@ -48,7 +52,7 @@ function AdminProducts() {
       setCategories(categoriesData);
     } catch (error) {
       console.error('Failed to load data:', error);
-      showPopup("Failed to load data");
+      showPopup(t("failed_load_data"));
     } finally {
       setLoading(false);
     }
@@ -63,7 +67,9 @@ function AdminProducts() {
     setEditingProduct(null);
     setFormData({
       name: "",
+      name_hi: "",
       description: "",
+      description_hi: "",
       price: "",
       mrp: "",
       stock: "",
@@ -77,7 +83,9 @@ function AdminProducts() {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      name_hi: product.name_hi || "",
       description: product.description || "",
+      description_hi: product.description_hi || "",
       price: product.price,
       mrp: product.mrp || "",
       stock: product.stock || 0,
@@ -88,14 +96,14 @@ function AdminProducts() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    if (!confirm(t("are_you_sure_delete"))) return;
 
     try {
       await adminService.deleteProduct(id);
-      showPopup("Product deleted successfully");
+      showPopup(t("product_deleted"));
       loadData();
     } catch (error) {
-      showPopup("Failed to delete product");
+      showPopup(t("failed_delete_product"));
     }
   };
 
@@ -112,14 +120,16 @@ function AdminProducts() {
       
       // Validate MRP
       if (mrp !== null && mrp < price) {
-        showPopup(`MRP (₹${mrp}) cannot be less than selling price (₹${price})`);
+        showPopup(`MRP (₹${mrp}) ${t("cannot_be_less_than")} selling price (₹${price})`);
         return;
       }
       
       // Send mrp as well (from mrp field)
       const productData = {
         name: formData.name,
+        name_hi: formData.name_hi || "",
         description: formData.description || null,
+        description_hi: formData.description_hi || "",
         price: price,
         mrp: mrp,
         stock: parseInt(formData.stock),
@@ -133,12 +143,12 @@ function AdminProducts() {
         console.log('Updating product with ID:', editingProduct.id);
         const result = await adminService.updateProduct(editingProduct.id, productData);
         console.log('Update result:', result);
-        showPopup("Product updated successfully");
+        showPopup(t("product_updated"));
       } else {
         console.log('Creating new product');
         const result = await adminService.createProduct(productData);
         console.log('Create result:', result);
-        showPopup("Product created successfully");
+        showPopup(t("product_created"));
       }
       setShowModal(false);
       loadData();
@@ -211,7 +221,7 @@ function AdminProducts() {
   }, [products, filterCategory, filterStock, sortConfig]);
 
   if (loading) {
-    return <Loader text="Loading products..." />;
+    return <Loader text={t("loading_products")} />;
   }
 
   return (
@@ -373,12 +383,34 @@ function AdminProducts() {
               </div>
 
               <div className="form-group">
+                <label>Hindi Name (हिन्दी नाम)</label>
+                <input
+                  type="text"
+                  name="name_hi"
+                  value={formData.name_hi}
+                  onChange={handleChange}
+                  placeholder="उत्पाद का नाम हिन्दी में"
+                />
+              </div>
+
+              <div className="form-group">
                 <label>Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   rows="3"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Hindi Description (हिन्दी विवरण)</label>
+                <textarea
+                  name="description_hi"
+                  value={formData.description_hi}
+                  onChange={handleChange}
+                  rows="3"
+                  placeholder="उत्पाद का विवरण हिन्दी में"
                 />
               </div>
 

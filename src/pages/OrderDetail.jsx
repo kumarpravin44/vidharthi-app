@@ -5,6 +5,7 @@ import BottomNav from "../components/BottomNav";
 import { orderService } from "../services/orderService";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function OrderDetail() {
@@ -12,6 +13,7 @@ function OrderDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
+  const { getLocalizedName, t } = useLanguage();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(false);
@@ -72,7 +74,7 @@ function OrderDetail() {
     
     if (!order?.items || order.items.length === 0) {
       console.log('No items in order');
-      showPopup("No items found in this order", "error");
+      showPopup(t("no_items_order"), "error");
       return;
     }
 
@@ -84,11 +86,11 @@ function OrderDetail() {
         console.log('Adding item to cart:', item);
         await addItem(item.product_id, item.quantity);
       }
-      showPopup("Items added to cart! 🛒", "success");
+      showPopup(t("items_added_cart"), "success");
       setTimeout(() => navigate("/cart"), 1500);
     } catch (error) {
       console.error('Error repeating order:', error);
-      showPopup(error.message || "Failed to add some items", "error");
+      showPopup(error.message || t("failed_add_items"), "error");
     } finally {
       setReordering(false);
     }
@@ -97,9 +99,9 @@ function OrderDetail() {
   if (loading) {
     return (
       <>
-        <InternalHeader title="Order Details" />
+        <InternalHeader title={t("order_details")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Loading order...</p>
+          <p style={{ textAlign: 'center', padding: '40px' }}>{t("loading_order")}</p>
         </div>
         <BottomNav />
       </>
@@ -109,15 +111,15 @@ function OrderDetail() {
   if (!order) {
     return (
       <>
-        <InternalHeader title="Order Details" />
+        <InternalHeader title={t("order_details")} />
         <div className="content">
-          <p style={{ textAlign: 'center', padding: '40px' }}>Order not found</p>
+          <p style={{ textAlign: 'center', padding: '40px' }}>{t("order_not_found")}</p>
           <button 
             className="primary-btn" 
             style={{ margin: '0 auto', display: 'block' }}
             onClick={() => navigate("/orders")}
           >
-            Back to Orders
+            {t("back_orders")}
           </button>
         </div>
         <BottomNav />
@@ -127,7 +129,7 @@ function OrderDetail() {
 
   return (
     <>
-      <InternalHeader title="Order Details" />
+      <InternalHeader title={t("order_details")} />
       <div className="content">
         <div className="order-detail-page">
 
@@ -145,23 +147,23 @@ function OrderDetail() {
 
             {order.cancel_reason && (
               <div className="cancel-reason">
-                <strong>Cancellation Reason:</strong> {order.cancel_reason}
+                <strong>{t("cancellation_reason")}:</strong> {order.cancel_reason}
               </div>
             )}
           </div>
 
           {/* Delivery Address */}
           <div className="info-card">
-            <h4><i className='bx bx-map'></i> Delivery Address</h4>
+            <h4><i className='bx bx-map'></i> {t("delivery_address")}</h4>
             <p>{order.delivery_address}</p>
             {order.notes && (
-              <p className="notes"><strong>Notes:</strong> {order.notes}</p>
+              <p className="notes"><strong>{t("notes")}:</strong> {order.notes}</p>
             )}
           </div>
 
           {/* Order Items */}
           <div className="info-card">
-            <h4><i className='bx bx-package'></i> Items</h4>
+            <h4><i className='bx bx-package'></i> {t("items")}</h4>
             <div className="order-items-list">
               {order.items?.map((item, idx) => (
                 <div 
@@ -179,9 +181,9 @@ function OrderDetail() {
                   )}
                   <div className="order-item-details">
                     <p className="item-name">
-                      {item.product?.name || `Product ID: ${item.product_id.substring(0, 8)}`}
+                      {getLocalizedName(item.product) || `Product ID: ${item.product_id.substring(0, 8)}`}
                     </p>
-                    <p className="item-qty">Quantity: {item.quantity}</p>
+                    <p className="item-qty">{t("quantity")}: {item.quantity}</p>
                   </div>
                   <div className="item-prices">
                     <p>₹{item.unit_price} × {item.quantity}</p>
@@ -194,18 +196,18 @@ function OrderDetail() {
 
           {/* Price Breakdown */}
           <div className="info-card">
-            <h4><i className='bx bx-receipt'></i> Price Details</h4>
+            <h4><i className='bx bx-receipt'></i> {t("price_details")}</h4>
             <div className="price-breakdown">
               <div className="price-row">
-                <span>Subtotal</span>
+                <span>{t("subtotal")}</span>
                 <span>₹{order.subtotal.toFixed(2)}</span>
               </div>
               <div className="price-row">
-                <span>Delivery Charge</span>
+                <span>{t("delivery_charge")}</span>
                 <span>₹{order.delivery_charge.toFixed(2)}</span>
               </div>
               <div className="price-row total-row">
-                <strong>Total</strong>
+                <strong>{t("total")}</strong>
                 <strong>₹{order.total.toFixed(2)}</strong>
               </div>
             </div>
@@ -214,7 +216,7 @@ function OrderDetail() {
           {/* Tracking Timeline */}
           {order.tracking && order.tracking.length > 0 && (
             <div className="info-card">
-              <h4><i className='bx bx-time-five'></i> Order Tracking</h4>
+              <h4><i className='bx bx-time-five'></i> {t("order_tracking")}</h4>
               <div className="tracking-timeline">
                 {order.tracking.map((track, idx) => (
                   <div className="tracking-event" key={idx}>
@@ -241,14 +243,14 @@ function OrderDetail() {
               disabled={reordering}
             >
               <i className='bx bx-revision'></i>
-              {reordering ? "Adding to Cart..." : "Repeat This Order"}
+              {reordering ? t("adding_cart") : t("repeat_order")}
             </button>
             <button 
               className="primary-btn" 
               style={{ width: '100%' }}
               onClick={() => navigate("/orders")}
             >
-              Back to Orders
+              {t("back_orders")}
             </button>
           </div>
 

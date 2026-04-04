@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useNavigation } from "../context/NavigationContext";
 import LanguageToggle from "./LanguageToggle";
-import { useTranslation } from "react-i18next"; // 👈 ADD
+import { useLanguage } from "../context/LanguageContext";
 
 const NAV_ICONS = ["bx-store", "bx-leaf", "bx-star", "bx-grid-alt", "bx-tag"];
 
@@ -10,7 +10,7 @@ function BottomNav() {
   const location = useLocation();
   const { itemCount } = useCart();
   const { navCategories } = useNavigation();
-  const { t } = useTranslation(); // 👈 ADD
+  const { t, getLocalizedName } = useLanguage();
 
   return (
     <>
@@ -33,7 +33,7 @@ function BottomNav() {
               <i className={`bx ${NAV_ICONS[idx % NAV_ICONS.length]} icon`}></i>
               
               {/* ⚠️ dynamic text */}
-              <p>{cat.name}</p>
+              <p>{getLocalizedName(cat)}</p>
             </Link>
           );
         })}

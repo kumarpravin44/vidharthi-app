@@ -4,10 +4,12 @@ import AdminHeader from "../../components/AdminHeader";
 import ImageUpload from "../../components/ImageUpload";
 import { adminService } from "../../services/adminService";
 import Loader from "../../components/Loader";
+import { useLanguage } from "../../context/LanguageContext";
 import "boxicons/css/boxicons.min.css";
 
 function AdminBanners() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -37,7 +39,7 @@ function AdminBanners() {
       const sorted = data.sort((a, b) => a.sort_order - b.sort_order);
       setBanners(sorted);
     } catch (error) {
-      showPopup("Failed to load banners");
+      showPopup(t("failed_load_banners"));
     } finally {
       setLoading(false);
     }
@@ -75,10 +77,10 @@ function AdminBanners() {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       await adminService.toggleBannerStatus(id, !currentStatus);
-      showPopup("Banner status updated");
+      showPopup(t("banner_status_updated"));
       loadBanners();
     } catch (error) {
-      showPopup("Failed to update banner status");
+      showPopup(t("failed_update_banner"));
     }
   };
 
@@ -86,7 +88,7 @@ function AdminBanners() {
     e.preventDefault();
     
     if (!formData.title || !formData.image_url) {
-      showPopup("Title and image are required");
+      showPopup(t("title_image_required"));
       return;
     }
 
@@ -101,15 +103,15 @@ function AdminBanners() {
     try {
       if (editingBanner) {
         await adminService.updateBanner(editingBanner.id, payload);
-        showPopup("Banner updated");
+        showPopup(t("banner_updated"));
       } else {
         await adminService.createBanner(payload);
-        showPopup("Banner created");
+        showPopup(t("banner_created"));
       }
       setShowModal(false);
       loadBanners();
     } catch (err) {
-      showPopup(err.message || "Failed to save banner");
+      showPopup(err.message || t("failed_save_banner"));
     }
   };
 
@@ -119,7 +121,7 @@ function AdminBanners() {
   };
 
   if (loading) {
-    return <Loader text="Loading banners..." />;
+    return <Loader text={t("loading_banners")} />;
   }
 
   return (
@@ -128,17 +130,17 @@ function AdminBanners() {
       <div className="admin-content">
         <div className="admin-page-header">
           <div>
-            <h1>Banners</h1>
-            <p>Manage home page banner images</p>
+            <h1>{t("banners")}</h1>
+            <p>{t("manage_banners")}</p>
           </div>
           <button className="admin-primary-btn" onClick={handleAdd}>
-            <i className="bx bx-plus"></i> Add Banner
+            <i className="bx bx-plus"></i> {t("add_banner")}
           </button>
         </div>
 
         {banners.length === 0 ? (
           <div className="empty-state">
-            <p>No banners found. Create your first banner!</p>
+            <p>{t("no_banners")}</p>
           </div>
         ) : (
           <div className="banners-grid">
@@ -148,7 +150,7 @@ function AdminBanners() {
                   <img src={banner.image_url} alt={banner.title} />
                   <div className="banner-overlay">
                     <span className={`status-badge ${banner.is_active ? 'active' : 'inactive'}`}>
-                      {banner.is_active ? 'Active' : 'Inactive'}
+                      {banner.is_active ? t("active") : t("inactive")}
                     </span>
                   </div>
                 </div>
@@ -165,14 +167,14 @@ function AdminBanners() {
                   <button 
                     className="btn-icon" 
                     onClick={() => handleEdit(banner)}
-                    title="Edit"
+                    title={t("edit")}
                   >
                     <i className="bx bx-edit"></i>
                   </button>
                   <button 
                     className={`btn-icon ${banner.is_active ? 'danger' : 'success'}`}
                     onClick={() => handleToggleStatus(banner.id, banner.is_active)}
-                    title={banner.is_active ? 'Deactivate' : 'Activate'}
+                    title={banner.is_active ? t("deactivate") : t("activate")}
                   >
                     <i className={`bx ${banner.is_active ? 'bx-hide' : 'bx-show'}`}></i>
                   </button>
@@ -187,7 +189,7 @@ function AdminBanners() {
           <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
             <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
               <div className="admin-modal-header">
-                <h2>{editingBanner ? "Edit Banner" : "Add New Banner"}</h2>
+                <h2>{editingBanner ? t("edit_banner") : t("add_new_banner")}</h2>
                 <button onClick={() => setShowModal(false)}>
                   <i className="bx bx-x"></i>
                 </button>
@@ -195,7 +197,7 @@ function AdminBanners() {
 
               <form onSubmit={handleSubmit} className="admin-form">
                 <div className="form-group">
-                  <label>Title *</label>
+                  <label>{t("title_required")}</label>
                   <input
                     type="text"
                     name="title"
@@ -207,18 +209,18 @@ function AdminBanners() {
                 </div>
 
                 <div className="form-group">
-                  <label>Banner Image *</label>
+                  <label>{t("banner_image_required")}</label>
                   <ImageUpload
                     type="banner"
                     currentImage={formData.image_url}
                     onImageUploaded={(url) => setFormData((prev) => ({ ...prev, image_url: url || "" }))}
-                    label="Banner Image"
+                    label={t("banner_image")}
                   />
-                  <small className="form-hint">Recommended: 1200x400px, JPG/PNG</small>
+                  <small className="form-hint">{t("recommended_banner")}</small>
                 </div>
 
                 <div className="form-group">
-                  <label>Link URL (optional)</label>
+                  <label>{t("link_url")}</label>
                   <input
                     type="text"
                     name="link_url"
@@ -226,11 +228,11 @@ function AdminBanners() {
                     onChange={handleChange}
                     placeholder="e.g., /products?category=sale"
                   />
-                  <small className="form-hint">Leave empty if banner is not clickable</small>
+                  <small className="form-hint">{t("leave_empty_clickable")}</small>
                 </div>
 
                 <div className="form-group">
-                  <label>Sort Order</label>
+                  <label>{t("sort_order")}</label>
                   <input
                     type="number"
                     name="sort_order"
@@ -238,7 +240,7 @@ function AdminBanners() {
                     onChange={handleChange}
                     min="0"
                   />
-                  <small className="form-hint">Lower numbers appear first</small>
+                  <small className="form-hint">{t("lower_first")}</small>
                 </div>
 
                 <div className="form-group">
@@ -250,17 +252,17 @@ function AdminBanners() {
                       onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
                       style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                     />
-                    <span>Active (show on homepage)</span>
+                    <span>{t("show_homepage")}</span>
                   </label>
-                  <small className="form-hint">Inactive banners won't appear on the homepage</small>
+                  <small className="form-hint">{t("inactive_homepage")}</small>
                 </div>
 
                 <div className="modal-actions">
                   <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>
-                    Cancel
+                    {t("cancel")}
                   </button>
                   <button type="submit" className="save-btn">
-                    {editingBanner ? "Update Banner" : "Create Banner"}
+                    {editingBanner ? t("update_banner") : t("create_banner")}
                   </button>
                 </div>
               </form>
