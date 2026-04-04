@@ -81,14 +81,14 @@ function AdminLogin() {
             {error && <div className="error-message">{error}</div>}
 
             <button type="submit" className="admin-login-btn" disabled={loading}>
-              {loading ? t("logging_in") : t("login")}
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
           <div className="admin-login-footer">
             <a href="/" className="back-to-store">
               <i className='bx bx-arrow-back'></i>
-              {t("back_to_store")}
+              Back to Store
             </a>
           </div>
         </div>
